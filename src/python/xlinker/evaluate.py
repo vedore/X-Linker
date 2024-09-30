@@ -2,6 +2,7 @@
 import pandas as pd
 import os
 from argparse import ArgumentParser, BooleanOptionalAction
+
 from src.python.xlinker.utils import (
     load_model,
     load_kb_info,
@@ -15,6 +16,8 @@ from src.python.utils import (
 )
 import src.python.xlinker.ppr as ppr
 from tqdm import tqdm
+
+
 
 # Parse arguments
 parser = ArgumentParser()
@@ -35,12 +38,16 @@ args = parser.parse_args()
 # ----------------------------------------------------------------------------
 # Load and setup model to apply
 # ----------------------------------------------------------------------------
+
+# xlinker/utils
 custom_xtf, tfidf_model, cluster_chain = load_model(args.model_dir, args.clustering)
 print("model loaded!")
 
 # ----------------------------------------------------------------------------
 # Load KB info
 # ----------------------------------------------------------------------------
+
+# xlinker/utils
 id_2_name, index_2_id, synonym_2_id_lower, name_2_id_lower, kb_names, kb_synonyms = (
     load_kb_info(args.kb, inference=True)
 )
@@ -51,6 +58,7 @@ print("KB info loaded!")
 # -------------------------------------------------------------------------------
 abbreviations = {}
 
+# python/utils
 if args.abbrv:
     abbreviations = get_dataset_abbreviations(args.dataset)
     print("Abbreviations loaded!")
@@ -67,6 +75,8 @@ with open(test_path, "r") as f:
     test_annots_raw = f.readlines()
     f.close()
 
+
+# python/utils
 test_input, test_annots = prepare_input(test_annots_raw, abbreviations, id_2_name)
 print("Test instances loaded!")
 
