@@ -2,32 +2,32 @@ import os
 
 import pandas as pd
 
-from root.python_utils.calculate_topk_accuracy import calculate_topk_accuracy
-from root.python_utils.get_dataset_abbreviations import get_dataset_abbreviations
-from root.python_utils.prepare_input import prepare_input
-from root.xlinker_utils.apply_pipeline_to_mention import apply_pipeline_to_mention
-from root.xlinker_utils.load_kb_info import load_kb_info
-from root.xlinker_utils.load_model import load_model
-from root.xlinker_utils.process_pecos_preds import process_pecos_preds
+from root.utils.calculate_topk_accuracy import calculate_topk_accuracy
+from root.utils.get_dataset_abbreviations import get_dataset_abbreviations
+from root.utils.prepare_input import prepare_input
+from root.utils.apply_pipeline_to_mention import apply_pipeline_to_mention
+from root.utils.load_kb_info import load_kb_info
+from root.utils.load_model import load_model
+from root.utils.process_pecos_preds import process_pecos_preds
 
 from tqdm import tqdm
 
 
-def model(model_dir, clustering):
+def xlinker_load_model(model_dir, clustering):
     custom_xtf, tfidf_model, cluster_chain = load_model(model_dir, clustering)
     return custom_xtf, tfidf_model, cluster_chain
 
-def kb_info(kb, inference):
+def xlinker_kb_info(kb, inference):
     id_2_name, index_2_id, synonym_2_id_lower, name_2_id_lower, kb_names, kb_synonyms = load_kb_info(kb, inference)
     return id_2_name, index_2_id, synonym_2_id_lower, name_2_id_lower, kb_names, kb_synonyms
 
-def dataset_abbreviations(dataset, abbrv):
+def xlinker_dataset_abbreviations(dataset, abbrv):
     abbreviations = {}
     if abbrv:
         abbreviations = get_dataset_abbreviations(dataset)
     return abbreviations
 
-def load_tests(dataset, ent_type, unseen):
+def xlinker_load_tests(dataset, ent_type, unseen):
     if unseen:
         test_path = f"data/datasets/{dataset}/test_{ent_type}_unseen.txt"
     else:
@@ -38,11 +38,11 @@ def load_tests(dataset, ent_type, unseen):
 
     return test_annots_raw
 
-def prep_input(test_annots_raw, abbreviations, id_2_name):
+def xlinker_prep_input(test_annots_raw, abbreviations, id_2_name):
     test_input, test_annots = prepare_input(test_annots_raw, abbreviations, id_2_name)
     return test_input, test_annots
 
-def apply_model_to_test_instances(custom_xtf, test_input, tfidf_model,
+def xlinker_apply_model_to_test_instances(custom_xtf, test_input, tfidf_model,
                                   test_annots, kb_names, kb_synonyms,
                                   name_2_id_lower, synonym_2_id_lower, index_2_id,
                                   pipeline, top_k, fuzzy_top_k, threshold):
@@ -86,7 +86,7 @@ def apply_model_to_test_instances(custom_xtf, test_input, tfidf_model,
 
     return output
 
-def evaluation(output, dataset, ent_type, kb, fuzzy_top_k, ppr):
+def xlinker_evaluation(output, dataset, ent_type, kb, fuzzy_top_k, ppr):
 
     predictions_df = pd.DataFrame(
         output, columns=["doc_id", "start", "end", "text", "code", "codes", "scores"]

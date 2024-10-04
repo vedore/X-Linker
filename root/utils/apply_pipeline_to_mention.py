@@ -1,4 +1,4 @@
-from root.xlinker_utils.process_pecos_preds import process_pecos_preds
+from root.utils.process_pecos_preds import process_pecos_preds
 from src.python.xlinker.candidates import map_to_kb
 
 
