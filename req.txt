@@ -1,0 +1,6 @@
+bconv==1.2.1
+libpecos==1.2.5
+obonet==1.1.0
+pandas==2.2.3
+RapidFuzz==3.10.0
+scipy==1.10.1

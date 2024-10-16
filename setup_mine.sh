@@ -12,16 +12,16 @@ check_sudo() {
 # Function to update and upgrade system packages
 update_system() {
     echo "Updating package lists..."
-    sudo apt update
+    apt update
 
     echo "Upgrading installed packages..."
-    sudo apt upgrade -y
+    apt upgrade -y
 }
 
 # Function to install necessary packages
 install_packages() {
     echo "Installing required packages..."
-    sudo apt install -y wget curl less nano unzip gawk libxml2-utils xmlstarlet g++
+    apt install -y wget curl less nano unzip gawk libxml2-utils xmlstarlet g++
 }
 
 install_python_requirements() {
@@ -90,10 +90,10 @@ download_and_extract_ncbi_text_lib() {
 }
 
 # Main script execution
-check_sudo
+# check_sudo
 update_system
 install_packages
 # install_python_requirements
-setup_abbreviation_detector
+# setup_abbreviation_detector
 
 echo "Script completed successfully."

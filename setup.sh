@@ -12,7 +12,7 @@ yes | apt install unzip
 yes | apt install gawk
 yes | apt install libxml2-utils 
 yes | apt-get install xmlstarlet
-yes | apt-get gzip
+yes | apt-get install gzip
 yes | apt-get install -y default-jdk && apt-get autoclean -y
 
 # Install Pip requirements
