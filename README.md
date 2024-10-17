@@ -24,30 +24,60 @@ Citation:
 
 - Pull the image of ubuntu 20.04 ou 22.04
 
+...
 docker pull ubuntu:22.04
+...
 
-Run the docker inside the folder of the x_linker
+- Run the docker inside the folder of the x_linker
 
+...
 docker run -v $(pwd):/x_linker --name x_linker --ipc="host" -it <image ID> bash
+...
 
-.setup_mine.sh
+- If u want to re-run the docker
 
+...
+docker start <container-name>
+
+docker exec -it <container-name> bash
+...
+
+- if u want to close just type
+
+...
+exit
+...
+
+- Update system and install python 
+
+...
 apt-get update && apt-get install -y build-essential git python3 python3-distutils python3-venv
+...
 
 - Create a venv to run python inside the folder
 
+...
 python3 -m venv venv
 
 source venv/bin/activate
+...
 
 - afterwards, inside the venv bash, Install all the dependicies inside the requirements.txt
 
+...
 pip install -r "req.txt"
+...
 
 - to exit just type
 
+...
 deactivate
+...
 
+- To test u can just use 
+
+...
+python src/python/xlinker/evaluate.py -dataset bc5cdr -ent_type Disease -kb medic -model_dir data/models/trained/disease_200_1ep -top_k 2 --abbrv --pipeline --threshold 0.15 --ppr
 ...
 
 The experiments were done in an environment based on Python 3.9.1.
