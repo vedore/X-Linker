@@ -1,12 +1,9 @@
-libpecos==1.0.0
-transformers==4.15.0
-torch==1.10.0
+libpecos==1.2.5
+obonet==1.1.0
+pandas==2.2.3
+RapidFuzz==3.10.0
+scipy==1.10.1
 bconv==1.2.1
-obonet
-rapidfuzz==3.3.0
-scipy
-pandas
-numpy==1.26.3
 
 #Optional: install wandb to monitor model training
-wandb
+
