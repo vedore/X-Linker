@@ -6,6 +6,8 @@ import os
 import logging
 import torch
 
+from data_builder.train_pecos.train_pecos_controller import parse_arguments, setup_logging
+
 # import wandb
 from pecos.utils.featurization.text.preprocess import Preprocessor
 from pecos.xmc.xtransformer.model import XTransformer
@@ -21,59 +23,71 @@ from logging.handlers import RotatingFileHandler
 # See https://discuss.pytorch.org/t/solved-make-sure-that-pytorch-using-gpu-to-compute/4870/6
 # torch.cuda.is_available()
 
+DATA_DIR = "data/train"
+MODEL_DIR_BASE = "data/models/trained/"
+LOG_DIR = "log/"
 
-# ------------------------------------------------------------
-# Args
-# ------------------------------------------------------------
-parser = argparse.ArgumentParser(description="Train XR-Transformer model")
-parser.add_argument("-run_name", type=str)
-parser.add_argument("-ent_type", type=str, default="Disease", help="")
-parser.add_argument("-kb", type=str, default="medic", help="")
-parser.add_argument(
-    "-model",
-    type=str,
-    default="bert",
-    choices=["bert", "roberta", "biobert", "scibert", "pubmedbert"],
-    help="",
-)
-parser.add_argument(
-    "-clustering", type=str, default="pifa", choices=["pifa", "pifa_lf"], help=""
-)
-parser.add_argument("-epochs", type=int, default=10, help="")
-parser.add_argument("-batch_size", type=int, default=32, help="")
-parser.add_argument("--only_kb", action="store_true", help="")
-parser.add_argument("--max_inst", type=int, help="")
-parser.add_argument("--batch_gen_workers", type=int, help="")
-args = parser.parse_args()
+def main():
+
+    args = parse_arguments()
+    setup_logging(args.run_name)
+    
+    logging.info(f"CUDA is available:{torch.cuda.is_available()}")
+    logging.info(f"CUDA Device Count:{torch.cuda.device_count()}")
+
+    model_dir = f"{MODEL_DIR_BASE}/{args.run_name}"
+    os.makedirs(model_dir, exist_ok=True)
+
+    # Load training parameters
+    params_filepath = f"{model_dir}/train_params.json"
+    if not os.path.exists(params_filepath):
+        logging.error("No training parameters file found.")
+        # os.system(f"cp data/models/trained")
+        return
+    
+    with open(params_filepath, "r", encoding="utf-8") as params_file:
+        params = json.load(params_file)
+
+    # Set up training data
+    train_filepath = get_training_filepath(args)
+    parsed_train_data = Preprocessor.load_data_from_file(
+        train_filepath, label_text_path=f"{KB_DIR}/labels.txt"
+    )
+    
+    # Extract Y_train and X_train
+    Y_train = parsed_train_data["label_matrix"]
+    X_train = parsed_train_data["corpus"]
+    R_train = copy.deepcopy(Y_train)
+
+    # Feature extraction
+    tfidf_model = handle_tfidf_model(X_train, model_dir)
+    X_train_feat = tfidf_model.predict(X_train)
+
+    # Build cluster chain
+    cluster_chain = build_cluster_chain(X_train, X_train_feat, Y_train, args.clustering, model_dir)
+
+    # Train model
+    train_problem = MLProblemWithText(X_train, Y_train, X_feat=X_train_feat)
+    custom_xtf = train_model(train_problem, R_train, cluster_chain, train_params)
+
+    logging.info("Training completed!")
+    custom_xtf.save(f"{model_dir}/xtransformer")
+
+if __name__ == "__main__":
+    main()
+
+    
 
 # ------------------------------------------------------------
 # Filepaths
 # ------------------------------------------------------------
+
 DATA_DIR = "data/train"
 KB_DIR = f"data/kbs/{args.kb}"
 RUN_NAME = args.run_name
 
 model_dir = f"data/models/trained/{RUN_NAME}"
 os.makedirs(model_dir, exist_ok=True)
-
-# ------------------------------------------------------------
-# Configure the logger
-# ------------------------------------------------------------
-log_format = "%(asctime)s - %(levelname)s - %(message)s"
-
-logging.basicConfig(
-    level=logging.INFO,
-    format=log_format,
-    handlers=[
-        logging.StreamHandler(),  # To write to console
-        RotatingFileHandler(
-            filename=f"log/TRAIN_{RUN_NAME}.log",
-            maxBytes=5 * 1024 * 1024,
-            backupCount=2,
-        ),  # To write to a rotating file
-    ],
-)
-logging.info("\n------------------------------------------")
 
 logging.info(f"CUDA is available:{torch.cuda.is_available()}")
 logging.info(f"CUDA DEVICE COUNT:{torch.cuda.device_count()}")

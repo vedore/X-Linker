@@ -37,9 +37,9 @@ test_input, test_annots = xlinker_prep_input(test_annots_raw, abbreviations, id_
 
 # Apply model to test instances
 # output = xlinker_apply_model_to_test_instances(custom_xtf, test_input, tfidf_model,
-#                               test_annots, kb_names, kb_synonyms,
-#                               name_2_id_lower, synonym_2_id_lower, index_2_id,
-#                               args.pipeline, args.top_k, args.fuzzy_top_k, args.threshold)
+#                                test_annots, kb_names, kb_synonyms,
+#                                name_2_id_lower, synonym_2_id_lower, index_2_id,
+#                                args.pipeline, args.top_k, args.fuzzy_top_k, args.threshold)
 
 # Evaluation
 # xlinker_evaluation(output, args.dataset, args.ent_type, args.kb, args.fuzzy_top_k, args.ppr)
