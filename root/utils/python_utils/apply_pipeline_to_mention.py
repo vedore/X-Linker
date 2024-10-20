@@ -1,6 +1,6 @@
 from root.utils.python_utils.process_pecos_preds import process_pecos_preds
 
-from src.python.xlinker.candidates import map_to_kb
+from root.ppr.candidates import map_to_kb
 
 
 """

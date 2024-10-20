@@ -4,7 +4,7 @@ import json
 import os
 import pandas as pd
 from math import log
-from root.ppr.kb import KnowledgeBase
+from root.utils.python_utils.kb import KnowledgeBase
 from root.utils.python_utils.calculate_topk_accuracy import calculate_topk_accuracy
 from root.ppr.candidates import map_to_kb, output_candidates_file
 
