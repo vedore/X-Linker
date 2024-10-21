@@ -39,5 +39,3 @@ cd ../../
 # CTD-Diseases
 # CTD-Genes
 
-#Output directory is "data/kbs/"
-bash data_builder/shell_scripts_py/generate_kbs.sh

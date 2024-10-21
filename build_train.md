@@ -23,6 +23,11 @@ Download KB data:
 ./src/bash/get_data_to_build.sh
 ```
 
+If u want to generate kbs run the script
+```
+generate_kbs.sh
+
+
 NOTE: If you generate a new training dataset using recent versions of the KB, you will need to train new models. The models that are provided were trained using older versions of the KBs.
 
 
