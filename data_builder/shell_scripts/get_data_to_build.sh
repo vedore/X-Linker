@@ -3,6 +3,7 @@
 #-----------------------------------------------------------------------------
 #                                  KBs
 #-----------------------------------------------------------------------------
+cd data
 mkdir -p kbs/
 cd kbs/
 
@@ -30,7 +31,7 @@ cd ../
 # NCBI taxon (version: 2024-03-28 11:27)
 #cd ../
 
-cd ../
+cd ../../
 
 #-----------------------------------------------------------------------------
 #Generate files storing the info related to the the following KOS:
@@ -39,4 +40,4 @@ cd ../
 # CTD-Genes
 
 #Output directory is "data/kbs/"
-bash src/bash/generate_kbs.sh
+bash data_builder/shell_scripts_py/generate_kbs.sh
