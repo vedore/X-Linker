@@ -46,10 +46,23 @@ def generate_kb_mappings(kb):
     id_column = config["id_column"]
     name_column = config["name_column"]
 
-    col_names = [
-        "DiseaseName", "DiseaseID", "CasRN", "Definition", "ParentIDs", "TreeNumbers",
-        "ParentTreeNumbers", "Synonyms", "pad"
-    ] if kb != "ncbi_taxon" and kb != "ctd_genes" else ["GeneSymbol", "GeneName", "GeneID", "Synonyms"]
+    # col_names = [
+    #     "DiseaseName", "DiseaseID", "CasRN", "Definition", "ParentIDs", "TreeNumbers",
+    #     "ParentTreeNumbers", "Synonyms", "pad"
+    # ] if kb != "ncbi_taxon" and kb != "ctd_genes" else ["GeneSymbol", "GeneName", "GeneID", "Synonyms"]
+
+    if kb == "medic":
+        col_names = ["DiseaseName", "DiseaseID", "AltDiseaseIDs", "Definition", "ParentIDs", "TreeNumbers",
+        "ParentTreeNumbers", "Synonyms", "Slimmappings"]
+    elif kb == "ctd_chemicals":
+        col_names = ["ChemicalName", "ChemicalID", "CasRN", "Definition", "ParentIDs", "TreeNumbers",
+        "ParentTreeNumbers", "Synonyms"]
+    elif kb == "ctd_genes":
+        col_names =  ["GeneSymbol", "GeneName", "GeneID", "AltGeneIDs", "Synonyms", "BioGRIDIDs",
+        "PharmGKBIDs", "UniProtIDs"]
+    else:
+        print("Kb Doesn't exit")
+        exit(0)
 
     data = pd.read_csv(data_filepath, names=col_names, sep="\t", skiprows=config["skiprows"])
 
