@@ -6,4 +6,4 @@ kb=$2
 pubtator=$3
 
 # Execute the Python script with the provided arguments
-python3 generate_training_data.py "$type" "$kb" "$pubtator"
+python3 data_builder/shell_utils//train_data/generate_training_data.py "$type" "$kb" "$pubtator"

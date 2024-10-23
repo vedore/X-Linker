@@ -2,6 +2,7 @@ import argparse
 import logging
 
 from logging.handlers import RotatingFileHandler
+from pathlib import Path
 
 
 def parse_arguments():
@@ -27,7 +28,27 @@ def parse_arguments():
     parser.add_argument("--batch_gen_workers", type=int, help="Number of workers for batch generation")
     return parser.parse_args()
 
+def setup_log_folder(run_name):
+    # Define the log file path
+    log_file_path = f"log/TRAIN_{run_name}.log"
+
+    # Get the directory part of the path (in this case "log")
+    log_dir = Path(log_file_path).parent
+
+    # Check if the directory exists; if not, create it
+    if not log_dir.exists():
+        log_dir.mkdir(parents=True, exist_ok=True)
+        print(f"Directory '{log_dir}' created.")
+
+        # Blank the file by opening it in write mode
+    with open(log_file_path, 'w') as log_file:
+        # Simply opening it in 'w' mode clears the file content
+        print(f"Log file '{log_file_path}' has been blanked.")
+
 def setup_logging(run_name):
+
+    setup_log_folder(run_name)
+
     log_format = "%(asctime)s - %(levelname)s - %(message)s"
     logging.basicConfig(
         level=logging.INFO,
@@ -44,12 +65,15 @@ def setup_logging(run_name):
     logging.info("Logging setup complete.")
 
 def get_training_filepath(args):
+
+    data_dir = f"data/train"
+
     if args.only_kb:
-        return f"{DATA_DIR}/{args.ent_type}/labels.txt"
+        return f"{data_dir}/{args.ent_type}/labels.txt"
     if args.ent_type == "Disease":
-        return f"{DATA_DIR}/Disease/train_Disease_{args.max_inst}.txt"
+        return f"{data_dir}/Disease/train_Disease_{args.max_inst}.txt"
     elif args.ent_type == "Chemical":
-        return f"{DATA_DIR}/Chemical/train_Chemical.txt"
+        return f"{data_dir}/Chemical/train_Chemical.txt"
     else:
         raise ValueError("Invalid entity type specified.")
     

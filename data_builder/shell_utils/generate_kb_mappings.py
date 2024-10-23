@@ -64,7 +64,7 @@ def generate_kb_mappings(kb):
         print("Kb Doesn't exit")
         exit(0)
 
-    data = pd.read_csv(data_filepath, names=col_names, sep="\t", skiprows=config["skiprows"])
+    data = pd.read_csv(data_filepath, names=col_names, sep="\t", skiprows=config["skiprows"], on_bad_lines='skip')
 
     # Clean identifiers for specific KBs
     if kb in ["medic", "ctd_chemicals"]:

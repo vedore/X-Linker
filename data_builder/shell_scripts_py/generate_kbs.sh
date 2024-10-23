@@ -7,7 +7,7 @@ python3 -c "from data_builder.shell_utils.generate_kb_mappings import generate_k
 python3 -c "from data_builder.shell_utils.generate_kb_mappings import generate_kb_mappings;generate_kb_mappings('ctd_chemicals')"
 
 #CTD-Gene
-#python3.9 -c "from src.python.utils import generate_kb_mappings;generate_kb_mappings('ctd_genes')"
+python3 -c "from data_builder.shell_utils.generate_kb_mappings import generate_kb_mappings;generate_kb_mappings('ctd_genes')"
 
 #NCBI-Taxon
 #Generate ncbi_taxon.csv

@@ -22,7 +22,7 @@ args = parser.parse_args()
 # Load and setup model to apply
 # custom_xtf, tfidf_model, cluster_chain = xlinker_load_model(args.model_dir, args.clustering)
 
-# Load KB info
+# Load KB info, gets labels and ids
 print("Loading KB_INFO")
 id_2_name, index_2_id, synonym_2_id_lower, name_2_id_lower, kb_names, kb_synonyms = xlinker_kb_info(args.kb, inference=True)
 
