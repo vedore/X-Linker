@@ -1,5 +1,5 @@
-from root.utils.python_utils.parse_json import parse_json
-from root.utils.python_utils.kb import KnowledgeBase
+from src.utils.python_utils.parse_json import parse_json
+from src.utils.python_utils.kb import KnowledgeBase
 
 
 """

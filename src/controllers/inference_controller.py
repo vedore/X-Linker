@@ -1,6 +1,6 @@
-from root.utils.python_utils.load_kb_info import load_kb_info
-from root.utils.python_utils.load_model import load_model
-from root.utils.python_utils.process_pecos_preds import process_pecos_preds
+from src.utils.python_utils.load_kb_info import load_kb_info
+from src.utils.python_utils.load_model import load_model
+from src.utils.python_utils.process_pecos_preds import process_pecos_preds
 
 from tqdm import tqdm
 

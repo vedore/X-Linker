@@ -1,6 +1,6 @@
 from argparse import ArgumentParser, BooleanOptionalAction
 
-from root.controllers.xlinker_controller import (xlinker_load_model, xlinker_kb_info, xlinker_dataset_abbreviations,
+from src.controllers.xlinker_controller import (xlinker_load_model, xlinker_kb_info, xlinker_dataset_abbreviations,
                                                       xlinker_load_tests, xlinker_prep_input, xlinker_apply_model_to_test_instances, xlinker_evaluation)
 
 # Parse arguments

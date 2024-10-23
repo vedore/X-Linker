@@ -1,7 +1,7 @@
 import os
 import json
 from rapidfuzz import process, fuzz
-from root.utils.python_utils.kb import KnowledgeBase
+from src.utils.python_utils.kb import KnowledgeBase
 from tqdm import tqdm
 
 
