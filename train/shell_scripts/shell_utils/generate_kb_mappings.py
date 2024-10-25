@@ -46,11 +46,6 @@ def generate_kb_mappings(kb):
     id_column = config["id_column"]
     name_column = config["name_column"]
 
-    # col_names = [
-    #     "DiseaseName", "DiseaseID", "CasRN", "Definition", "ParentIDs", "TreeNumbers",
-    #     "ParentTreeNumbers", "Synonyms", "pad"
-    # ] if kb != "ncbi_taxon" and kb != "ctd_genes" else ["GeneSymbol", "GeneName", "GeneID", "Synonyms"]
-
     if kb == "medic":
         col_names = ["DiseaseName", "DiseaseID", "AltDiseaseIDs", "Definition", "ParentIDs", "TreeNumbers",
         "ParentTreeNumbers", "Synonyms", "Slimmappings"]
@@ -66,6 +61,9 @@ def generate_kb_mappings(kb):
 
     data = pd.read_csv(data_filepath, names=col_names, sep="\t", skiprows=config["skiprows"])
 
+    print(data.iloc[1])
+
+    """
     # Clean identifiers for specific KBs
     if kb in ["medic", "ctd_chemicals"]:
         data[id_column] = data[id_column].str.replace("MESH:", "")
@@ -112,3 +110,7 @@ def generate_kb_mappings(kb):
     write_json(dict(zip(names, labels)), "name_2_label.json")
     write_json(synonym_2_id, "synonym_2_label.json")
     write_json(id_2_synonym, "label_2_synonym.json")
+
+    """
+
+generate_kb_mappings("medic")
