@@ -14,3 +14,5 @@ Download Knowledge Base Data and Generate it
 
 generate_kbs.sh
 ```
+
+export PYTHONPATH="${PYTHONPATH}:"

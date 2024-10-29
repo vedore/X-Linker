@@ -32,9 +32,13 @@ kb_mappings = {
     }
 
 kb_filepath = os.path.abspath("data/raw/mesh_data/medic/CTD_diseases.tsv")
+kb_type = 'medic'
 id_column = "DiseaseID"
-name_column = "DiseaseName"
+delimiter = '\t'
 skip_rows = 29
 
-kb = Kb(filepath=kb_filepath, kb_type='medic', id_column=id_column, name_column=name_column, skip_rows=skip_rows)
-kb.load_tsv()
+processed_folder = "data/processed/mesh_processed"
+
+# kb = Kb().load(processed_folder, kb_type)
+kb = Kb().clean_dataframe(kb_filepath, kb_type, id_column, delimiter, skip_rows, processed_folder)
+print(kb.dataframe.head(5))
