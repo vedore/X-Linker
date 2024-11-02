@@ -93,31 +93,25 @@ class Kb:
         return instance
 
     def create_labels(self, labels_folder=LABELS_PROCESSED):
-        """Generate any labels for KB entries if needed."""
-        # DiseaseID -> DiseaseName
-        # DiseaseID -> Synonyms
+        """Generate labels for KB entries and save them to a JSON file.
 
+        Args:
+            labels_folder (str): Folder path to save the labels file.
+        """
         if self.kb_type == 'medic':
-            # Create a dictionary to hold DiseaseID: Labels
             all_labels = []
-
-            # Iterate over each row
             for _, row in self.dataframe.iterrows():
-                # Create DiseaseID: DiseaseName
                 primary_label = f"{row['DiseaseID']}: {row['DiseaseName']}"
                 all_labels.append({'DiseaseID': row['DiseaseID'], 'Label': primary_label})
-
+                
                 for synonyms in row['Synonyms']:
                     synonyms_label = f"{row['DiseaseID']}: {synonyms}"
                     all_labels.append({'DiseaseID': row['DiseaseID'], 'Label': synonyms_label})
 
-            # Conver to Dataframe to Group (Visualize Helper)
             all_labels_df = pd.DataFrame(all_labels)
-
-            # Group by DiseaseID and collect labels into a list for each DiseaseID
             json_data = all_labels_df.groupby('DiseaseID')['Label'].apply(list).to_dict()
 
-            # Save to JSON file
+            os.makedirs(labels_folder, exist_ok=True)
             with open(os.path.join(labels_folder, f"{self.kb_type}_labels_processed.json"), 'w') as json_file:
                 json.dump(json_data, json_file, indent=4)
 
