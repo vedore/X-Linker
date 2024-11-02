@@ -1,15 +1,22 @@
 import os
 import pandas as pd
+import json
 
 from src.preprocessing.data_cleaner import DataCleaner
 from src.preprocessing.text_normalizer import TextNormalizer
 
 MESH_PROCESSED = "data/processed/mesh_processed"
+LABELS_PROCESSED = "data/processed/index_labels"
 
 class Kb:
     """Knowledge Base Class for handling KB data processing."""
 
-    kb_types = {'medic', 'disease'}
+    kb_types = {'medic', 'chemical'}
+
+    kb_columns = {'medic': 
+                  {'id':'DiseaseID', 'name':'DiseaseName', 'synonyms':'Synonyms'},
+                  'chemical':
+                  {'id':'ChemicalID', 'name':'ChemicalName', 'synonyms':'Synonyms'}}
     
     def __init__(self):
         """
@@ -19,8 +26,9 @@ class Kb:
             dataframe (DataFrame): Placeholder for the cleaned dataframe.
         """
         self.dataframe = None
+        self.kb_type = None
 
-    def save(self, kb_folder, kb_type):
+    def save(self, kb_type, kb_folder=MESH_PROCESSED):
         """Save cleaned dataframe from KB to disk.
 
         Args:
@@ -28,10 +36,11 @@ class Kb:
             kb_type (str): Name of the type to save.
         """
         os.makedirs(kb_folder, exist_ok=True)
-        self.dataframe.to_parquet(os.path.join(kb_folder, f"{kb_type.lower()}_processed.parquet"))
+        self.dataframe.to_parquet(os.path.join(kb_folder, f"{kb_type.lower()}_mesh_processed.parquet"))
+        self.kb_type = kb_type
 
     @classmethod
-    def load(cls, kb_folder, kb_type):
+    def load(cls, kb_type, kb_folder=MESH_PROCESSED):
         """Load a saved cleaned DataFrame from disk.
 
         Args:
@@ -43,15 +52,16 @@ class Kb:
         """
         if os.path.exists(kb_folder):
             if kb_type in cls.kb_types:
-                dataframe = pd.read_parquet(os.path.join(kb_folder, f"{kb_type.lower()}_processed.parquet"))
+                dataframe = pd.read_parquet(os.path.join(kb_folder, f"{kb_type.lower()}_mesh_processed.parquet"))
                 instance = cls()
                 instance.dataframe = dataframe
+                instance.kb_type = kb_type
                 return instance
         print("Doesn't Exist")
         return cls()
 
     @classmethod
-    def clean_dataframe(cls, data_filepath, kb_type, id_column, delimiter, skip_rows, kb_processed_folder):
+    def clean_dataframe(cls, data_filepath, kb_type, id_column, delimiter, skip_rows, kb_folder=MESH_PROCESSED):
         """Load, clean, and normalize data, then save as a parquet file.
 
         Args:
@@ -60,7 +70,7 @@ class Kb:
             skip_rows (int): Number of rows to skip in the file.
             delimiter (str): Delimiter used in the input file.
             id_column (str): Name of the column with unique identifiers.
-            kb_processed_folder (str): Folder to save the cleaned data.
+            kb_folder (str): Folder to save the cleaned data.
 
         Returns:
             Kb: A Kb object with an cleaned Dataframe
@@ -78,15 +88,38 @@ class Kb:
         instance.dataframe = instance._normalize_data(instance.dataframe, kb_type)
 
         # Save the cleaned dataframe
-        instance.save(kb_processed_folder, kb_type)
+        instance.save(kb_type, kb_folder)
 
         return instance
 
-    def create_labels(self):
+    def create_labels(self, labels_folder=LABELS_PROCESSED):
         """Generate any labels for KB entries if needed."""
         # DiseaseID -> DiseaseName
         # DiseaseID -> Synonyms
-        pass
+
+        if self.kb_type == 'medic':
+            # Create a dictionary to hold DiseaseID: Labels
+            all_labels = []
+
+            # Iterate over each row
+            for _, row in self.dataframe.iterrows():
+                # Create DiseaseID: DiseaseName
+                primary_label = f"{row['DiseaseID']}: {row['DiseaseName']}"
+                all_labels.append({'DiseaseID': row['DiseaseID'], 'Label': primary_label})
+
+                for synonyms in row['Synonyms']:
+                    synonyms_label = f"{row['DiseaseID']}: {synonyms}"
+                    all_labels.append({'DiseaseID': row['DiseaseID'], 'Label': synonyms_label})
+
+            # Conver to Dataframe to Group (Visualize Helper)
+            all_labels_df = pd.DataFrame(all_labels)
+
+            # Group by DiseaseID and collect labels into a list for each DiseaseID
+            json_data = all_labels_df.groupby('DiseaseID')['Label'].apply(list).to_dict()
+
+            # Save to JSON file
+            with open(os.path.join(labels_folder, f"{self.kb_type}_labels_processed.json"), 'w') as json_file:
+                json.dump(json_data, json_file, indent=4)
 
     @staticmethod
     def _clean_data(dataframe, kb_type, id_column):

@@ -39,6 +39,6 @@ skip_rows = 29
 
 processed_folder = "data/processed/mesh_processed"
 
-# kb = Kb().load(processed_folder, kb_type)
-kb = Kb().clean_dataframe(kb_filepath, kb_type, id_column, delimiter, skip_rows, processed_folder)
-print(kb.dataframe.head(5))
+kb = Kb().load(kb_type)
+# kb = Kb().clean_dataframe(kb_filepath, kb_type, id_column, delimiter, skip_rows)
+kb.create_labels()
