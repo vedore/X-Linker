@@ -2,8 +2,8 @@ import json
 import os
 import pandas as pd
 
-import cupy as cp
 import cudf
+
 from cuml.feature_extraction.text import TfidfVectorizer
 from cuml.cluster import AgglomerativeClustering
 
@@ -84,8 +84,8 @@ class Embeddings:
             raise ValueError("Embeddings data has not been processed. Call prepare_data() first.")
         
         vectorizer = TfidfVectorizer()
-        data_df = cudf.DataFrame.from_dict(self.embeddings_data_processed, orient='index', columns=['text'])
-        self.embeddings_matrix = vectorizer.fit_transform(data_df['text'].to_array())
+        embeddings = vectorizer.fit_transform(self.embeddings_data_processed).toarray()
+        self.embeddings_matrix = embeddings
 
     def save_processed(self, kb_type, embeddings_folder=EMBEDDINGS_PROCESSED):
         """
@@ -134,6 +134,7 @@ class Embeddings:
 
         return instance
 
+    # No Cuda Handler
     def clustering(self):
         """
         Perform hierarchical clustering on the embeddings matrix.
@@ -150,6 +151,9 @@ class Embeddings:
             metric='cosine',
             linkage='average'
         )
-        clustering_model.fit(self.embeddings_matrix.toarray())  # Convert sparse matrix for clustering
-        clusters = dict(zip(self.embeddings_ids, clustering_model.labels_))
+
+        embeddings_df = cudf.Dataframe.from_records(self.embeddings_matrix)
+        clustering_model.fit(embeddings_df)
+
+        clusters = dict(zip(self.embeddings_ids, clustering_model.labels_.to_array()))
         return clusters
