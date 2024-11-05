@@ -1,8 +1,8 @@
 import os
 import pandas as pd
 
+from src.embeddings.embeddings import Embeddings
 from src.preprocessing.kb import Kb
-from src.preprocessing.preprocessing import Preprocessing
 
 kb_mappings = {
         "medic": {
@@ -37,8 +37,16 @@ id_column = "DiseaseID"
 delimiter = '\t'
 skip_rows = 29
 
-processed_folder = "data/processed/mesh_processed"
+processed_mesh_folder = "data/processed/mesh_processed"
 
-kb = Kb().load(kb_type)
+processed_index_labels = "data/processed/index_labels"
+
+
+# kb = Kb().load(kb_type)
 # kb = Kb().clean_dataframe(kb_filepath, kb_type, id_column, delimiter, skip_rows)
-kb.create_labels()
+# kb.create_labels()
+
+embeddings = Embeddings().load(kb_type, processed_index_labels)
+embeddings.prepare_data()
+embeddings.save(kb_type)
+
