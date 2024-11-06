@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 
-from src.embeddings.embeddings import Embeddings
+from src.embeddings.embeddings import Embeddings 
 from src.preprocessing.kb import Kb
 
 kb_mappings = {
@@ -45,13 +45,14 @@ processed_embeddings = "data/processed/embeddings"
 
 
 # kb = Kb().load(kb_type)
-kb = Kb().clean_dataframe(kb_filepath, kb_type, id_column, delimiter, skip_rows)
-kb.create_labels()
+# kb = Kb().clean_dataframe(kb_filepath, kb_type, id_column, delimiter, skip_rows)
+# kb.create_labels()
 
-embeddings = Embeddings().load_unprocessed(kb_type, processed_index_labels)
+embeddings = Embeddings().load_labels(kb_type, processed_index_labels)
 embeddings.prepare_data()
 embeddings.create_embeddings()
-embeddings.save_processed(kb_type)
+embeddings.clustering()
+# embeddings.save_processed(kb_type)
 
 # embeddings = Embeddings().load_processed(kb_type, processed_embeddings)
 # cluster_dict = embeddings.clustering()
