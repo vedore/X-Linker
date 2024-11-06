@@ -10,6 +10,7 @@ except Exception: # this command not being found can raise quite a few different
     GPU_AVAILABLE = False
 
 if GPU_AVAILABLE:
+    import cupy as cp
     import cudf
     from cuml.cluster import AgglomerativeClustering as cuML_AgglomerativeClustering
 
@@ -34,28 +35,42 @@ class HierarchicalClustering():
     
     def hierarchical_clustering(self, embeddings, embeddings_ids):
         if self.use_gpu:
+            # Initialize cuML clustering model
             clustering_model = cuML_AgglomerativeClustering(
-                n_clusters=None,
-                distance_threshold=0.5,
+                n_clusters=2,
                 metric='cosine',
-                linkage='average',
+                linkage='single'
             )
-            embeddings_df = cudf.Dataframe.from_records(embeddings)
+
+            # Convert embeddings to a cupy array if they are sparse
+            embeddings = cp.asarray(embeddings.toarray())  # assuming embeddings is a sparse matrix
+            embeddings_df = cudf.DataFrame.from_records(embeddings)  # Convert to cudf DataFrame
+            
+            # Fit model
             clustering_model.fit(embeddings_df)
         else:
+            # Initialize scikit-learn clustering model for CPU
             clustering_model = sk_AgglomerativeClustering(
                 n_clusters=None,
                 distance_threshold=0.5,
                 metric='cosine',
                 linkage='average',
             )
+            
+            # Fit model on CPU
             clustering_model.fit(embeddings)
 
+         # Convert the cluster labels to a CPU-compatible format (NumPy array)
+        labels = clustering_model.labels_.to_numpy() if self.use_gpu else clustering_model.labels_
+
+        # Create DataFrame with EntityID and ClusterLabel
         clustering_df = pd.DataFrame({
             'EntityID': embeddings_ids, 
-            'ClusterLabel': clustering_model.labels_
+            'ClusterLabel': labels
         })
 
+        # Store the results
         self.clustering_df = clustering_df
+        print(self.clustering_df['ClusterLabel'])
         self.save()
         return clustering_df

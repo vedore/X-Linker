@@ -16,3 +16,7 @@ generate_kbs.sh
 ```
 
 export PYTHONPATH="${PYTHONPATH}:"
+
+
+12.5
+pip install "nvidia-cuda-runtime-cu12==12.X.*"

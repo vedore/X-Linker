@@ -11,6 +11,7 @@ except Exception: # this command not being found can raise quite a few different
     GPU_AVAILABLE = False
 
 if GPU_AVAILABLE:
+    import cudf
     from cuml.feature_extraction.text import TfidfVectorizer as cuML_TfidfVectorizer
 
 from sklearn.feature_extraction.text import TfidfVectorizer as sk_TfidfVectorizer
@@ -35,10 +36,12 @@ class Vectorizer():
     def tfidf_vectorizer(self, processed_labels_data):
         if self.use_gpu:
             vectorizer = cuML_TfidfVectorizer()
+            data = cudf.Series(processed_labels_data)
         else:
             vectorizer = sk_TfidfVectorizer()
+            data = processed_labels_data
 
-        embeddings = vectorizer.fit_transform(processed_labels_data).toarray()
+        embeddings = vectorizer.fit_transform(data)
         self.embeddings= embeddings
         self.save()
         return embeddings

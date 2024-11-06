@@ -49,6 +49,7 @@ processed_embeddings = "data/processed/embeddings"
 # kb.create_labels()
 
 embeddings = Embeddings().load_labels(kb_type, processed_index_labels)
+embeddings.use_gpu = True
 embeddings.prepare_data()
 embeddings.create_embeddings()
 embeddings.clustering()
