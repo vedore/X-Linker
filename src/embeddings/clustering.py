@@ -71,6 +71,5 @@ class HierarchicalClustering():
 
         # Store the results
         self.clustering_df = clustering_df
-        print(self.clustering_df['ClusterLabel'])
         self.save()
         return clustering_df

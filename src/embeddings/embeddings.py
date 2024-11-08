@@ -1,12 +1,14 @@
 import json
 import os
 import pandas as pd
+import numpy as np
 
 from src.embeddings.clustering import HierarchicalClustering
 from src.embeddings.vectorizer import Vectorizer
 
-LABELS_PROCESSED = "data/processed/index_labels"
-EMBEDDINGS_PROCESSED = "data/processed/embeddings"
+LABELS_FOLDER = "data/processed/index_labels"
+EMBEDDINGS_FOLDER = "data/processed/embeddings"
+CLUSTERING_FOLDER = "data/processed/clustering"
 
 class Embeddings:
 
@@ -21,10 +23,10 @@ class Embeddings:
         self.processed_labels_data = None
         self.processed_labels_id= None
         self.embeddings = None
-        self.clusters = None
+        self.clustering_df = None
 
     @classmethod
-    def load_labels(cls, kb_type, labels_folder=LABELS_PROCESSED):
+    def load_labels(cls, kb_type, labels_folder=LABELS_FOLDER):
         
         labels_file = os.path.join(labels_folder, f"{kb_type}_labels_processed.json")
 
@@ -47,25 +49,27 @@ class Embeddings:
         self.processed_labels_data = list(labels_dict.values())
         self.processed_labels_id = list(labels_dict.keys())
 
-        print("Data Prepared")
-
     def create_embeddings(self):
         vectorizer = Vectorizer(self.kb_type, self.use_gpu)
         self.embeddings = vectorizer.tfidf_vectorizer(self.processed_labels_data)
-
-        print("Embeddings Done")
     
-    def load_embeddings(self):
-        return 
-    
-    def save_embeddings(self):
-        return 
+    def load_embeddings(self, embeddings_folder=EMBEDDINGS_FOLDER):
+        embeddings_cpu_file = os.path.join(embeddings_folder, f"{self.kb_type}_clustering_cpu.parquet")
+        embeddings_gpu_file = os.path.join(embeddings_folder, f"{self.kb_type}_clustering_gpu.parquet")
+        if os.path.exists(embeddings_gpu_file):
+            self.embeddings = np.load(embeddings_gpu_file)
+        elif os.path.exists(embeddings_cpu_file):
+            self.embeddings = np.load(embeddings_cpu_file)
+        else:
+            print("File Doesn't Exist")
 
-    def clustering(self):
+    def create_clustering(self):
         clustering = HierarchicalClustering(self.kb_type, self.use_gpu)
         self.clusters = clustering.hierarchical_clustering(self.embeddings, self.processed_labels_id)
 
-    def save_clustering(self):
-        return
+    def load_clustering(self, clustering_folder=CLUSTERING_FOLDER): 
+        clustering_file = os.path.join(clustering_folder, f"{self.kb_type}_clustering_gpu.parquet")
+        self.clustering_df = pd.read_parquet(clustering_file)
+
 
 
