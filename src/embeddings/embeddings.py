@@ -54,17 +54,20 @@ class Embeddings:
         self.embeddings = vectorizer.tfidf_vectorizer(self.processed_labels_data)
     
     def load_embeddings(self, embeddings_folder=EMBEDDINGS_FOLDER):
-        embeddings_cpu_file = os.path.join(embeddings_folder, f"{self.kb_type}_clustering_cpu.parquet")
-        embeddings_gpu_file = os.path.join(embeddings_folder, f"{self.kb_type}_clustering_gpu.parquet")
+        embeddings_cpu_file = os.path.join(embeddings_folder, f"{self.kb_type}_embeddings_cpu.npy")
+        embeddings_gpu_file = os.path.join(embeddings_folder, f"{self.kb_type}_embeddings_gpu.npy")
         if os.path.exists(embeddings_gpu_file):
-            self.embeddings = np.load(embeddings_gpu_file)
+            self.embeddings = np.load(embeddings_gpu_file, allow_pickle=True)
+            print("Loaded GPU Embeddings")
         elif os.path.exists(embeddings_cpu_file):
-            self.embeddings = np.load(embeddings_cpu_file)
+            self.embeddings = np.load(embeddings_cpu_file, allow_pickle=True)
+            print("Loaded CPU Embeddings")
         else:
             print("File Doesn't Exist")
 
     def create_clustering(self):
         clustering = HierarchicalClustering(self.kb_type, self.use_gpu)
+        print(type(self.embeddings))
         self.clusters = clustering.hierarchical_clustering(self.embeddings, self.processed_labels_id)
 
     def load_clustering(self, clustering_folder=CLUSTERING_FOLDER): 

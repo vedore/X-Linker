@@ -42,7 +42,7 @@ class Vectorizer():
             data = processed_labels_data
 
         embeddings = vectorizer.fit_transform(data)
-        self.embeddings= embeddings
+        self.embeddings = embeddings
         self.save()
         return embeddings
 
