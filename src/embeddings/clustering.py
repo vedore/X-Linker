@@ -37,14 +37,19 @@ class HierarchicalClustering():
         if self.use_gpu:
             # Initialize cuML clustering model
             clustering_model = cuML_AgglomerativeClustering(
-                n_clusters=2,
+                n_clusters=300,
                 metric='cosine',
                 linkage='single'
             )
 
             # Convert embeddings to a cupy array if they are sparse
-            embeddings = cp.asarray(embeddings.toarray())  # assuming embeddings is a sparse matrix
-            embeddings_df = cudf.DataFrame.from_records(embeddings)  # Convert to cudf DataFrame
+            # embeddings = cp.asarray(embeddings.toarray())  # assuming embeddings is a sparse matrix
+            # embeddings_df = cudf.DataFrame.from_records(embeddings)  # Convert to cudf DataFrame
+            # print(embeddings.shape)
+
+            embeddings_df = cudf.DataFrame(embeddings.toarray())
+
+            print(embeddings_df)
             
             # Fit model
             clustering_model.fit(embeddings_df)

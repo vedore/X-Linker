@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import pickle
 
 import subprocess
 
@@ -28,10 +29,12 @@ class Vectorizer():
 
     def save(self,  embeddings_folder= EMBEDDINGS_FOLDER):
         if self.use_gpu:
-            embedding_file = f"{self.kb_type}_embeddings_gpu.npy"
+            embedding_file = f"{self.kb_type}_embeddings_gpu.pkl"
         else:
-            embedding_file = f"{self.kb_type}_embeddings_cpu.npy"
-        np.save(os.path.join(embeddings_folder, embedding_file), self.embeddings)
+            embedding_file = f"{self.kb_type}_embeddings_cpu.pkl"
+
+        with open(os.path.join(embeddings_folder, embedding_file), 'wb') as pickle_file:
+            pickle.dump(self.embeddings, pickle_file)
 
     def tfidf_vectorizer(self, processed_labels_data):
         if self.use_gpu:
