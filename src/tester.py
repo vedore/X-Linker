@@ -43,21 +43,34 @@ processed_index_labels = "data/processed/index_labels"
 
 processed_embeddings = "data/processed/embeddings"
 
+processed_clustering = "data/processed/clustering"
+
 
 # kb = Kb().load(kb_type)
 # kb = Kb().clean_dataframe(kb_filepath, kb_type, id_column, delimiter, skip_rows)
 # kb.create_labels()
 
 embeddings = Embeddings().load_labels(kb_type, processed_index_labels)
-embeddings.use_gpu = True
+embeddings.use_gpu = False
 # embeddings.prepare_data()
 # embeddings.create_embeddings()
 embeddings.load_embeddings()
-embeddings.create_clustering()
+# embeddings.create_clustering()
+embeddings.load_clustering()
 
-# embeddings.load_clustering()
+embeddings = embeddings.embeddings
+df_clustering = embeddings.clustering_df
 
-df = embeddings.clustering_df
+entity_ids = df_clustering['EntityID']
+clustering_labels = df_clustering['ClusterLabel']
+
+print(type(embeddings))
+
+
+
+# df = df.groupby('ClusterLabel')['EntityID'].apply(list)
+
+print(df_clustering)
 
 
 # embeddings.prepare_data()

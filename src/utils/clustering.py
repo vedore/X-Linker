@@ -37,8 +37,8 @@ class HierarchicalClustering():
         if self.use_gpu:
             # Initialize cuML clustering model
             clustering_model = cuML_AgglomerativeClustering(
-                n_clusters=300,
-                metric='cosine',
+                n_clusters=15,
+                metric='euclidean',
                 linkage='single'
             )
 

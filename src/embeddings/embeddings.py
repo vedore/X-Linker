@@ -4,8 +4,8 @@ import pandas as pd
 import numpy as np
 import pickle
 
-from src.embeddings.clustering import HierarchicalClustering
-from src.embeddings.vectorizer import Vectorizer
+from src.utils.clustering import HierarchicalClustering
+from src.utils.vectorizer import Vectorizer
 
 LABELS_FOLDER = "data/processed/index_labels"
 EMBEDDINGS_FOLDER = "data/processed/embeddings"

@@ -2,8 +2,8 @@ import os
 import pandas as pd
 import json
 
-from src.preprocessing.data_cleaner import DataCleaner
-from src.preprocessing.text_normalizer import TextNormalizer
+from src.utils.data_cleaner import DataCleaner
+from src.utils.text_normalizer import TextNormalizer
 
 MESH_PROCESSED = "data/processed/mesh_processed"
 LABELS_PROCESSED = "data/processed/index_labels"
