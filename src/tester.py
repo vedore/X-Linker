@@ -2,6 +2,7 @@ import os
 import pandas as pd
 
 from src.embeddings.embeddings import Embeddings 
+from src.entity_linking.trainning_model import TrainningModel
 from src.preprocessing.kb import Kb
 
 kb_mappings = {
@@ -58,19 +59,18 @@ embeddings.load_embeddings()
 # embeddings.create_clustering()
 embeddings.load_clustering()
 
-embeddings = embeddings.embeddings
-df_clustering = embeddings.clustering_df
+emb = embeddings.embeddings
+clustering_df = embeddings.clustering_df
 
-entity_ids = df_clustering['EntityID']
-clustering_labels = df_clustering['ClusterLabel']
-
-print(type(embeddings))
+tm = TrainningModel()
+tm.prepare_data(clustering_df, emb)
+tm.train_model()
 
 
 
 # df = df.groupby('ClusterLabel')['EntityID'].apply(list)
 
-print(df_clustering)
+# print(df_clustering)
 
 
 # embeddings.prepare_data()

@@ -1,11 +1,13 @@
 import json
 import os
+import subprocess
 import pandas as pd
 import numpy as np
 import pickle
 
 from src.utils.clustering import HierarchicalClustering
 from src.utils.vectorizer import Vectorizer
+
 
 LABELS_FOLDER = "data/processed/index_labels"
 EMBEDDINGS_FOLDER = "data/processed/embeddings"
@@ -55,18 +57,18 @@ class Embeddings:
         self.embeddings = vectorizer.tfidf_vectorizer(self.processed_labels_data)
     
     def load_embeddings(self, embeddings_folder=EMBEDDINGS_FOLDER):
-        # embeddings_cpu_file = os.path.join(embeddings_folder, f"{self.kb_type}_embeddings_cpu.npy")
+        embeddings_cpu_file = os.path.join(embeddings_folder, f"{self.kb_type}_embeddings_cpu.pkl")
         embeddings_gpu_file = os.path.join(embeddings_folder, f"{self.kb_type}_embeddings_gpu.pkl")
-        print(embeddings_gpu_file)
-        if os.path.exists(embeddings_gpu_file):
+        if os.path.exists(embeddings_gpu_file) and self.use_gpu:
             with open(embeddings_gpu_file, 'rb') as pickle_file:
                 self.embeddings = pickle.load(pickle_file)
             print("Loaded GPU Embeddings")
-        # elif os.path.exists(embeddings_cpu_file):
-        #     self.embeddings = np.load(embeddings_cpu_file, allow_pickle=True)
-        #     print("Loaded CPU Embeddings")
-        # else:
-        #     print("File Doesn't Exist")
+        elif os.path.exists(embeddings_cpu_file):
+            with open(embeddings_cpu_file, 'rb') as pickle_file:
+                self.embeddings = pickle.load(pickle_file)
+            print("Loaded CPU Embeddings")
+        else:
+            print("File Doesn't Exist")
 
     def create_clustering(self):
         clustering = HierarchicalClustering(self.kb_type, self.use_gpu)
