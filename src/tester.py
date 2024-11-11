@@ -68,9 +68,9 @@ tm.train_model()
 
 
 
-# df = df.groupby('ClusterLabel')['EntityID'].apply(list)
+df = clustering_df.groupby('ClusterLabel')['EntityID'].apply(list)
 
-# print(df_clustering)
+print(df)
 
 
 # embeddings.prepare_data()

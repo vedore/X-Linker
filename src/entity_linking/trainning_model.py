@@ -1,7 +1,7 @@
 import numpy as np
 
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
 
 # from cuML.model_selection import train_test_split
@@ -25,28 +25,35 @@ class TrainningModel():
     def train_model(self):
         X_train, X_test, y_train, y_test = train_test_split(self.embeddings, self.clustering_labels, test_size=0.2, random_state=42)
 
-        # Train a logistic regression classifier
-        matching_model = RandomForestClassifier(max_depth=10, n_estimators=100, random_state=42)
+        matching_model = LogisticRegression(max_iter=1000, random_state=42)
         matching_model.fit(X_train, y_train)
 
         # Check the model's accuracy
         print("Training accuracy:", matching_model.score(X_train, y_train))
         print("Test accuracy:", matching_model.score(X_test, y_test))
 
-        # Calculate top-3 accuracy on the test set
-        print("Top-3 accuracy:", self.top_k_accuracy(matching_model, X_test, y_test, k=3))
+        # Predict on the test set
+        y_pred = matching_model.predict(X_test)
 
-    def top_k_accuracy(self, model, X, y, k=3):
-        if hasattr(model, "predict_proba"):
-            # Get probability predictions for each class
-            probs = model.predict_proba(X)
-            # Get indices of top-k predictions per sample
-            top_k_preds = np.argsort(probs, axis=1)[:, -k:]
-            # Check if true label is among the top-k predictions
-            top_k_correct = [int(y.iloc[i] in top_k_preds[i]) for i in range(len(y))]
-            return np.mean(top_k_correct)
-        else:
-            raise ValueError("Model does not support top-k accuracy calculation.")
+        print(classification_report(y_test, y_pred))
+
+        # Test top-k accuracy on the test set
+        top_k_acc = self.top_k_accuracy(matching_model, X_test, y_test)
+        print(f"Top-3 Accuracy: {top_k_acc:.2f}")
+
+    @staticmethod
+    def top_k_accuracy(model, X, y, k=3):
+        # Get probabilities for each class
+        probs = model.predict_proba(X)
+        # Get the top-k predictions for each sample
+        top_k_preds = np.argsort(probs, axis=1)[:, -k:]
+        
+        y_array = y.to_numpy()
+        
+        # Calculate top-k accuracy
+        top_k_correct = [int(y_array[i] in top_k_preds[i]) for i in range(len(y_array))]
+
+        return np.mean(top_k_correct)
 
         
 
