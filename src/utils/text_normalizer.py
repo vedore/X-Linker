@@ -5,9 +5,9 @@ from nltk.stem import WordNetLemmatizer
 import nltk
 
 # Download necessary NLTK resources
-nltk.download('punkt_tab')
-nltk.download('stopwords')
-nltk.download('wordnet')
+nltk.download('punkt_tab', quiet=True)
+nltk.download('stopwords', quiet=True)
+nltk.download('wordnet', quiet=True)
 
 
 class TextNormalizer:

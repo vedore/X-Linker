@@ -5,15 +5,15 @@ import pandas as pd
 import numpy as np
 import pickle
 
-from src.utils.clustering import HierarchicalClustering
-from src.utils.vectorizer import Vectorizer
+from src.utils.hierarchical_clustering import HierarchicalClustering
+from src.utils.tfid_vectorizer import TfidVectorizer
 
 
-LABELS_FOLDER = "data/processed/index_labels"
+LABELS_FOLDER = "data/processed/labels"
 EMBEDDINGS_FOLDER = "data/processed/embeddings"
 CLUSTERING_FOLDER = "data/processed/clustering"
 
-class Embeddings:
+class Vectorizer:
 
     kb_types = {'medic', 'chemical'}
 
@@ -53,7 +53,7 @@ class Embeddings:
         self.processed_labels_id = list(labels_dict.keys())
 
     def create_embeddings(self):
-        vectorizer = Vectorizer(self.kb_type, self.use_gpu)
+        vectorizer = TfidVectorizer(self.kb_type, self.use_gpu)
         self.embeddings = vectorizer.tfidf_vectorizer(self.processed_labels_data)
     
     def load_embeddings(self, embeddings_folder=EMBEDDINGS_FOLDER):

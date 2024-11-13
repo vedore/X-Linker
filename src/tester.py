@@ -1,9 +1,7 @@
 import os
 import pandas as pd
 
-from src.embeddings.embeddings import Embeddings 
-from src.entity_linking.trainning_model import TrainningModel
-from src.preprocessing.kb import Kb
+from src.kb.knowledge_base import KnowledgeBase, KnowledgeBaseLabelsExtraction
 
 kb_mappings = {
         "medic": {
@@ -40,37 +38,72 @@ skip_rows = 29
 
 processed_mesh_folder = "data/processed/mesh_processed"
 
-processed_index_labels = "data/processed/index_labels"
+processed_labels = "data/processed/labels"
 
 processed_embeddings = "data/processed/embeddings"
 
 processed_clustering = "data/processed/clustering"
 
+"""
+    Clean the Database
+"""
+# kb = KnowledgeBase.mop('medic', kb_filepath)
 
-# kb = Kb().load(kb_type)
-# kb = Kb().clean_dataframe(kb_filepath, kb_type, id_column, delimiter, skip_rows)
-# kb.create_labels()
+"""
+    Save The Database
+"""
+# kb.save(processed_mesh_folder)
 
-embeddings = Embeddings().load_labels(kb_type, processed_index_labels)
-embeddings.use_gpu = False
+"""
+    Load an Dataframe 
+"""
+# kb = KnowledgeBase.load("data/processed/mesh_processed/medic_knowledge_base.pkl")
+
+"""
+    Print the Dataframe
+"""
+# print(kb.dataframe)
+
+"""
+    Create Labels
+"""
+# kb_labels = KnowledgeBaseLabelsExtraction.extract_labels(kb.kb_type, kb.dataframe)
+
+"""
+    Save Labels
+"""
+# kb_labels.save(processed_labels)
+
+"""
+    Load the Labels
+"""
+kb_labels = KnowledgeBaseLabelsExtraction.load("data/processed/labels/medic_labels_processed.json")
+
+"""
+    Print the Labels
+"""
+# print(kb_labels.labels_dict)
+
+
+
+# embeddings = Preprocessing.load_labels(kb_type, processed_index_labels)
+# embeddings.use_gpu = False
 # embeddings.prepare_data()
 # embeddings.create_embeddings()
-embeddings.load_embeddings()
+# embeddings.load_embeddings()
 # embeddings.create_clustering()
-embeddings.load_clustering()
+# embeddings.load_clustering()
 
-emb = embeddings.embeddings
-clustering_df = embeddings.clustering_df
+# emb = embeddings.embeddings
+# clustering_df = embeddings.clustering_df
 
-tm = TrainningModel()
-tm.prepare_data(clustering_df, emb)
-tm.train_model()
+# tm = TrainningModel()
+# tm.prepare_data(clustering_df, emb)
+# tm.train_model()
 
+# df = clustering_df.groupby('ClusterLabel')['EntityID'].apply(list)
 
-
-df = clustering_df.groupby('ClusterLabel')['EntityID'].apply(list)
-
-print(df)
+# print(df)
 
 
 # embeddings.prepare_data()

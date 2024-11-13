@@ -2,11 +2,11 @@ import os
 import pandas as pd
 import json
 
-from src.utils.data_cleaner import DataCleaner
+# from src.utils.preprocessor_util import DataCleaner
 from src.utils.text_normalizer import TextNormalizer
 
 MESH_PROCESSED = "data/processed/mesh_processed"
-LABELS_PROCESSED = "data/processed/index_labels"
+LABELS_PROCESSED = "data/processed/labels"
 
 class Kb:
     """Knowledge Base Class for handling KB data processing."""

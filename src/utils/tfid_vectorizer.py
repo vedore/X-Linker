@@ -19,7 +19,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer as sk_TfidfVectorize
 
 EMBEDDINGS_FOLDER = "data/processed/embeddings"
 
-class Vectorizer():
+class TfidVectorizer():
 
     def __init__(self, kb_type, use_gpu=False):
         self.kb_type = kb_type
