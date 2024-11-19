@@ -9,7 +9,6 @@ try:
 except Exception: # this command not being found can raise quite a few different errors depending on the configuration
     print('No Nvidia GPU in system!')
     GPU_AVAILABLE = False
-    exit()
 
 if GPU_AVAILABLE:
     import cupy as cp
