@@ -21,22 +21,20 @@ kb_dict = {
 
 class KnowledgeBase():
 
-    def __init__(self, kb_type, dataframe=None):
-        self.kb_type = kb_type
+    def __init__(self, dataframe=None):
         self.dataframe = dataframe
 
     def save(self, kb_folder):
         os.makedirs(kb_folder, exist_ok=True)
-        with open(os.path.join(kb_folder, f"{self.kb_type}_knowledge_base.pkl"), 'wb') as fout:
+        with open(os.path.join(kb_folder, 'knowledge_base.pkl'), 'wb') as fout:
             pickle.dump(self.dataframe, fout)
     
     @classmethod
-    def load(cls, kb_filepath):
-        assert os.path.exists(kb_filepath), f"{kb_filepath} does not exist"
-        kb_type = kb_filepath.split('/')[-1].split('_')[0]
-        with open(kb_filepath, 'rb') as fin:
-            df = pickle.load(fin)
-        return cls(kb_type, df)
+    def load(cls, kb_folder):
+        kb_path = os.path.join(kb_folder, 'knowledge_base.pkl')
+        assert os.path.exists(kb_path), f"{kb_path} does not exist"
+        with open(kb_path, 'rb') as fin:
+            return cls(pickle.load(fin))
     
     @classmethod
     def mop(cls, kb_type, kb_filepath):
@@ -51,7 +49,7 @@ class KnowledgeBase():
         
         df = KnowledgeBaseCleaner.clean(kb_type, pd.read_csv(kb_filepath, **defaults))
         df = KnowledgeBaseTextNormalizer.normalize_dataframe(kb_type, df)
-        return cls(kb_type, df)
+        return cls(df)
     
  
     def extract_labels(self, labels_folder):
@@ -69,8 +67,7 @@ class KnowledgeBase():
 
 class KnowledgeBaseLabelsExtraction():
     
-    def __init__(self, kb_type, labels_dict=None):
-        self.kb_type = kb_type
+    def __init__(self, labels_dict=None):
         self.labels_dict = labels_dict
 
     @classmethod
@@ -87,21 +84,21 @@ class KnowledgeBaseLabelsExtraction():
 
             all_labels_df = pd.DataFrame(all_labels)
             labels_dict = all_labels_df.groupby('DiseaseID')['Label'].apply(list).to_dict()
-            return cls(kb_type, labels_dict)
+            return cls(labels_dict)
 
     
     def save(self, labels_folder):
         os.makedirs(labels_folder, exist_ok=True)
-        with open(os.path.join(labels_folder, f"{self.kb_type}_labels_processed.json"), 'w') as json_file:
+        with open(os.path.join(labels_folder, 'labels.json'), 'w') as json_file:
             json.dump(self.labels_dict, json_file, indent=4)
 
     @classmethod
-    def load(cls, labels_filepath):
+    def load(cls, labels_folder):
+        labels_filepath = os.path.join(labels_folder, 'labels.json')
         assert os.path.exists(labels_filepath), f"{labels_filepath} does not exist"
-        kb_type = labels_filepath.split('/')[-1].split('_')[0]
         with open(labels_filepath, 'r') as json_file:
             labels = json.load(json_file)
-        return cls(kb_type, labels)
+        return cls(labels)
 
 
 class KnowledgeBaseCleaner():

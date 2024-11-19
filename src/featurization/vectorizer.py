@@ -24,7 +24,8 @@ class Vectorizer():
             return cls(pickle.load(fvec))
     
     @classmethod
-    def train(cls, trn_corpus, config=None, dtype=np.float32):
+    # Had an config file
+    def train(cls, trn_corpus, dtype=np.float32):
         defaults = {
             'encoding': 'utf-8',
             'strip_accents': 'unicode',
@@ -36,10 +37,10 @@ class Vectorizer():
             'dtype': dtype,
         }
         try:
-            model = TfidfVectorizer(**{**defaults, **config})
+            model = TfidfVectorizer(**defaults)
         except TypeError:
             raise Exception(
-                f"vectorizer config {config} contains unexpected keyword arguments for TfidfVectorizer"
+                f"vectorizer config {defaults} contains unexpected keyword arguments for TfidfVectorizer"
             )
         model.fit(trn_corpus)
         return cls(model)

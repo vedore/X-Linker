@@ -1,16 +1,18 @@
+import json
 import numpy as np
 import pandas as pd
+import os
 
 from src.featurization.vectorizer import Vectorizer
 
 kb_dict = {
-    'medic': 'DiseaseID'
+    'medic': 'DiseaseID',
+    'chemical': 'ChemicalID'
     }
 
 class Preprocessor(object):
 
-    def __init__(self, kb_type, vectorizer=None):
-        self.kb_type = kb_type
+    def __init__(self, vectorizer=None):
         self.vectorizer = vectorizer
 
     def save(self, preprocessor_folder):
@@ -22,28 +24,31 @@ class Preprocessor(object):
         return cls(vectorizer)
     
     @classmethod
-    def train(cls, corpus, vectorizer_config=None, dtype=np.float32):
-        vectorizer = Vectorizer.train(corpus, vectorizer_config, dtype=dtype)
+    ## Had an config file
+    def train(cls, corpus, dtype=np.float32):
+        vectorizer = Vectorizer.train(corpus, dtype=dtype)
         return cls(vectorizer)
     
     def predict(self, corpus, **kwargs):
         return self.vectorizer.predict(corpus, **kwargs)
     
     @staticmethod
-    def load_data_from_file(self, kb_filepath):
-        defaults = {
-            'sep': '\t',
-            'header': None,
-            'names': self,
-            'skiprows': 29,
-            'names': get_column_names_from_tsv(kb_filepath, 29)
-        }
+    def load_data_from_file(labels_folder):
 
-        def get_column_names_from_tsv(filepath, skip_rows):
-            with open(filepath, 'r') as fin:
-                for _ in range(skip_rows - 1):
-                    line = fin.readline()
-                col_names = [str(item).strip() for item in line.split("\t")]
-                col_names[0] = col_names[0].replace('#', '').strip()
-            return col_names
+        labels_file = os.path.join(labels_folder, 'labels.json')
+
+        with open(labels_file, 'r') as json_file:
+            labels_data = json.load(json_file)
+
+        labels_dict = {}
+        for labels_id, entries in labels_data.items():
+            # Combine names and synonyms into a single text string for each entity
+            names_and_synonyms = [entry.split(': ', 1)[1] for entry in entries]
+            combined_text = ' '.join(names_and_synonyms)
+            labels_dict[labels_id] = combined_text
+        
+        processed_labels_data = list(labels_dict.values())
+        processed_labels_id = list(labels_dict.keys())
+
+        return (processed_labels_id, processed_labels_data)
         
