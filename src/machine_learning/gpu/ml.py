@@ -1,6 +1,8 @@
-import os
-import pickle
 import subprocess
+import os
+import pandas as pd
+
+from src.machine_learning.clustering import Clustering
 
 
 try:
@@ -16,26 +18,7 @@ if GPU_AVAILABLE:
     from cuml.cluster import AgglomerativeClustering as CUAC
 
 
-class ClusteringGPU():
-
-    def __init__(self, model=None, model_type=None):
-        self.model = model
-        self.model_type = model_type
-
-    def save(self, clustering_folder):
-        os.makedirs(clustering_folder, exist_ok=True)
-        with open(os.path.join(clustering_folder, 'clustering.pkl'), 'wb') as fout:
-            pickle.dump({'model': self.model, 'model_type': self.model_type}, fout)
-    
-    @classmethod
-    def load(cls, clustering_folder):
-        clustering_path = os.path.join(clustering_folder, 'clustering.pkl')
-        assert os.path.exists(clustering_path), f"{clustering_path} does not exist"
-        with open(clustering_path, 'rb') as fclu:
-            data = pickle.load(fclu)
-        return cls(model=data['model'], model_type=data['model_type'])
-
-class AgglomerativeClustering(ClusteringGPU):
+class AgglomerativeClusteringGPU(Clustering):
 
     @classmethod
     def train(cls, embeddings):
@@ -46,12 +29,19 @@ class AgglomerativeClustering(ClusteringGPU):
         }
 
         # defaults.update(kwargs)
-
         model = CUAC(**defaults)
         embeddings = cudf.DataFrame(embeddings.toarray())
         model.fit(embeddings)
-
         return cls(model=model, model_type='Agglomerative')
+
+    def save_labels(self, clustering_folder):
+        os.makedirs(clustering_folder, exist_ok=True)
+        clustering_df = pd.Dataframe(
+            {
+                'Labels': self.model.labels_.to_numpy()
+            }
+        )
+        clustering_df.to_parquet(os.path.join(clustering_df, 'labels.parquet'))
     
     def get_labels(self):
         return self.model.labels_.to_numpy()

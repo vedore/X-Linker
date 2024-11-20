@@ -89,15 +89,15 @@ class KnowledgeBaseLabelsExtraction():
     
     def save(self, labels_folder):
         os.makedirs(labels_folder, exist_ok=True)
-        with open(os.path.join(labels_folder, 'labels.json'), 'w') as json_file:
-            json.dump(self.labels_dict, json_file, indent=4)
+        with open(os.path.join(labels_folder, 'labels.json'), 'w') as fout:
+            json.dump(self.labels_dict, fout, indent=4)
 
     @classmethod
     def load(cls, labels_folder):
         labels_filepath = os.path.join(labels_folder, 'labels.json')
         assert os.path.exists(labels_filepath), f"{labels_filepath} does not exist"
-        with open(labels_filepath, 'r') as json_file:
-            labels = json.load(json_file)
+        with open(labels_filepath, 'r') as fin:
+            labels = json.load(fin)
         return cls(labels)
 
 

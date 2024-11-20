@@ -1,27 +1,11 @@
-import os
-import json
-import pickle
-
 import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
+
+from sklearn.feature_extraction.text import TfidfVectorizer as TfidfVec
+
+from src.featurization.preprocessor import Preprocessor
 
 
-class Vectorizer():
-    
-    def __init__(self, model=None):
-        self.model = model
-
-    def save(self, vectorizer_folder):
-        os.makedirs(vectorizer_folder, exist_ok=True)
-        with open(os.path.join(vectorizer_folder, 'vectorizer.pkl'), 'wb') as fout:
-            pickle.dump(self.model, fout)
-
-    @classmethod
-    def load(cls, vectorizer_folder):
-        vectorizer_path = os.path.join(vectorizer_folder, 'vectorizer.pkl')
-        assert os.path.exists(vectorizer_path), f"{vectorizer_path} does not exist"
-        with open(vectorizer_path, 'rb') as fvec:
-            return cls(pickle.load(fvec))
+class TfidfVectorizer(Preprocessor):
     
     @classmethod
     # Had an config file
@@ -37,15 +21,11 @@ class Vectorizer():
             'dtype': dtype,
         }
         try:
-            model = TfidfVectorizer(**defaults)
+            model = TfidfVec(**defaults)
         except TypeError:
             raise Exception(
                 f"vectorizer config {defaults} contains unexpected keyword arguments for TfidfVectorizer"
             )
         model.fit(trn_corpus)
-        return cls(model)
-    
-    def predict(self, corpus):
-        result = self.model.transform(corpus)
-        return result
+        return cls(vectorizer=model, vectorizer_type='tfidf')
 
