@@ -36,12 +36,12 @@ class AgglomerativeClusteringGPU(Clustering):
 
     def save_labels(self, clustering_folder):
         os.makedirs(clustering_folder, exist_ok=True)
-        clustering_df = pd.Dataframe(
+        clustering_df = pd.DataFrame(
             {
                 'Labels': self.model.labels_.to_numpy()
             }
         )
-        clustering_df.to_parquet(os.path.join(clustering_df, 'labels.parquet'))
+        clustering_df.to_parquet(os.path.join(clustering_folder, 'labels.parquet'))
     
     def get_labels(self):
         return self.model.labels_.to_numpy()
