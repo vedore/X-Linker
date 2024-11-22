@@ -20,12 +20,29 @@ if GPU_AVAILABLE:
 
 class AgglomerativeClusteringGPU(Clustering):
 
+    """
+        All the defaults,
+
+        defaults = {
+            'n_clusters': 16,
+            'metric': 'cosine',
+            'linkage': 'average',
+            'handle': None,
+            'verbose': False,
+            'connectivity': 'knn',
+            'n_neighbors': 10,
+            'output_type': None
+        }
+    """
+
     @classmethod
     def train(cls, embeddings):
         defaults = {
-            'n_clusters': 15,
-            'metric': 'euclidean',
-            'linkage': 'single',
+            'n_clusters': 16,
+            'metric': 'cosine',
+            'linkage': 'average',
+            'connectivity': 'knn',
+            'n_neighbors': 10,
         }
 
         # defaults.update(kwargs)

@@ -8,6 +8,7 @@ from src.machine_learning.cpu.ml import LogisticRegressionCPU
         
 class Train():
 
+    @classmethod
     def train(cls, embeddings, clustering_labels):
 
         X_train, X_test, y_train, y_test = train_test_split(

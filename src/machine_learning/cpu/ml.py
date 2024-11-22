@@ -39,7 +39,6 @@ class LogisticRegressionCPU(Clustering):
     @classmethod
     def train(cls, X_train, y_train, **kwargs):
         defaults = {
-            'max_inter': 1000,
             'random_state': 42,
         }
 
