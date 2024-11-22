@@ -74,23 +74,6 @@ class KnowledgeBaseLabelsExtraction():
     def extract_labels(cls, kb_type, dataframe):
         if kb_type == 'medic':
             all_labels = []
-            synonyms = []
-            for _, row in dataframe.iterrows():
-                primary_label = f"{row['DiseaseID']}: {row['DiseaseName']}"
-                all_labels.append({'DiseaseID': row['DiseaseID'], 'Label': primary_label})
-                
-                for synonyms in row['Synonyms']:
-                    synonyms_label = f"{row['DiseaseID']}: {synonyms}"
-                    all_labels.append({'DiseaseID': row['DiseaseID'], 'Label': synonyms_label})
-
-            all_labels_df = pd.DataFrame(all_labels)
-            labels_dict = all_labels_df.groupby('DiseaseID')['Label'].apply(list).to_dict()
-            return cls(labels_dict)
-    
-    @classmethod
-    def extract_labels_version_2(cls, kb_type, dataframe):
-        if kb_type == 'medic':
-            all_labels = []
             for _, row in dataframe.iterrows():
                 synonyms_list = []
                 for synonyms in row['Synonyms']:

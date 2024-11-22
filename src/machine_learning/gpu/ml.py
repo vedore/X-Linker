@@ -40,7 +40,7 @@ class AgglomerativeClusteringGPU(Clustering):
         defaults = {
             'n_clusters': 16,
             'metric': 'cosine',
-            'linkage': 'average',
+            'linkage': 'single',
             'connectivity': 'knn',
             'n_neighbors': 10,
         }
