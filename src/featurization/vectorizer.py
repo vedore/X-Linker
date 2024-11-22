@@ -5,6 +5,7 @@ import pickle
 
 from sklearn.feature_extraction.text import TfidfVectorizer as TfidfVec
 from transformers import AutoTokenizer, AutoModel
+from transformers import DistilBertTokenizer, DistilBertForSequenceClassification
 
 from src.featurization.preprocessor import Preprocessor
 
@@ -47,13 +48,13 @@ class TfidfVectorizer(Preprocessor):
     def train(cls, trn_corpus, dtype=np.float32):
         defaults = {
             'encoding': 'utf-8',
-            'stip_accents': 'unicode',
+            'strip_accents': 'unicode',
             'stop_words': None, 
             'ngram_range': (1, 1),
             'min_df': 1,
             'lowercase': True,
             'norm': 'l2',
-            'dype': dtype     
+            'dtype': dtype     
         }
         try:
             model = TfidfVec(**defaults)
@@ -64,6 +65,8 @@ class TfidfVectorizer(Preprocessor):
         model.fit(trn_corpus)
         return cls(vectorizer=model, vectorizer_type='tfidf')
 
+"""
+# Impossible To Run
 class BioBertVectorizer():
 
     model_name = "dmis-lab/biobert-base-cased-v1.2"
@@ -72,11 +75,18 @@ class BioBertVectorizer():
     
     @classmethod
     def predict(cls, corpus):
-        inputs = cls.tokenizer(corpus, return_tensors='pt', padding=True, truncation=True, max_length=256)
+        inputs = cls.tokenizer(corpus, return_tensors='pt', padding=True, truncation=True)
         with torch.no_grad():
             outputs = cls.model(**inputs)
         return outputs.last_hidden_state.mean(dim=1)
+    
+class DistilBertVectorizer():
 
+    model_name = "distilbert-base-uncased"
+    tokenizer = DistilBertTokenizer.from_pretrained("distilbert-base-uncased")
+    model = DistilBertForSequenceClassification.from_pretrained("distilbert-base-uncased")
+
+"""
 
 
 

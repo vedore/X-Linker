@@ -161,17 +161,13 @@ class KnowledgeBaseTextNormalizer():
             
         # Remove punctuation
         text = text.translate(str.maketrans("", "", string.punctuation))
-            
+        
         # Tokenize the text
         tokens = word_tokenize(text)
             
-        # Remove stopwords and non-alphabetic tokens
-        filtered_tokens = [
-            lemmatizer.lemmatize(word)
-            for word in tokens
-            if word.isalpha() and word not in stop_words
-        ]
-            
+        # Remove stopwords
+        filtered_tokens = [word for word in tokens if word.lower() not in stop_words]
+
         # Join tokens back into a single string
         normalized_text = " ".join(filtered_tokens)
             
