@@ -37,8 +37,9 @@ class Preprocessor():
         labels_dict = {}
         for labels_id, entries in labels_data.items():
             # Combine names and synonyms into a single text string for each entity
-            names_and_synonyms = [entry.split(': ', 1)[1] for entry in entries]
-            combined_text = ' '.join(names_and_synonyms)
+            names_and_synonyms = " ".join(entries)
+            unique_words = list(set(names_and_synonyms.split()))
+            combined_text = ' '.join(unique_words)
             labels_dict[labels_id] = combined_text
         
         processed_labels_data = list(labels_dict.values())

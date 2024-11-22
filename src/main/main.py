@@ -12,7 +12,6 @@ from src.featurization.vectorizer import TfidfVectorizer
 
 
 def clean_kb():
-    """
     try:
         kb = KnowledgeBase.load("data/processed/mesh_processed")
         print("Loaded KB")
@@ -20,16 +19,14 @@ def clean_kb():
         kb = KnowledgeBase.mop('medic', 'data/raw/mesh_data/medic/CTD_diseases.tsv')
         kb.save("data/processed/mesh_processed")
         print("Saved KB")
-    """
 
-    kb = KnowledgeBase.mop('medic', 'data/raw/mesh_data/medic/CTD_diseases.tsv')
-    kb.save("data/processed/mesh_processed")
-    print("Saved KB")
+    # kb = KnowledgeBase.mop('medic', 'data/raw/mesh_data/medic/CTD_diseases.tsv')
+    # kb.save("data/processed/mesh_processed")
+    # print("Saved KB")
     
     return kb.dataframe
 
 def create_labels(dataframe):
-    """
     try:
         kb_labels = KnowledgeBaseLabelsExtraction.load("data/processed/labels")
         print("Loaded Labels")
@@ -37,10 +34,10 @@ def create_labels(dataframe):
         kb_labels = KnowledgeBaseLabelsExtraction.extract_labels('medic', dataframe)
         kb_labels.save("data/processed/labels")
         print("Saved Labels")
-    """
-    kb_labels = KnowledgeBaseLabelsExtraction.extract_labels('medic', dataframe)
-    kb_labels.save("data/processed/labels")
-    print("Saved Labels")
+
+    # kb_labels = KnowledgeBaseLabelsExtraction.extract_labels_version_2('medic', dataframe)
+    # kb_labels.save("data/processed/labels")
+    # print("Saved Labels")
 
 def get_labels_to_preprocessor():
     processed_labels = Preprocessor.load_labels_from_file("data/processed/labels")
@@ -104,17 +101,13 @@ def trainning(embeddings, clustering_labels):
     
 dataframe = clean_kb()
 
-# print(dataframe.head())
-
 create_labels(dataframe)
 
-processed_labels = get_labels_to_preprocessor()
-
-# print(processed_labels)
+processed_labels = get_labels_to_preprocessor()[1:]
 
 embeddings = preprocessor(processed_labels)
 
-# print(embeddings)
+print(embeddings)
 
 labels = clustering(embeddings)
 

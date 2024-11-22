@@ -74,6 +74,7 @@ class KnowledgeBaseLabelsExtraction():
     def extract_labels(cls, kb_type, dataframe):
         if kb_type == 'medic':
             all_labels = []
+            synonyms = []
             for _, row in dataframe.iterrows():
                 primary_label = f"{row['DiseaseID']}: {row['DiseaseName']}"
                 all_labels.append({'DiseaseID': row['DiseaseID'], 'Label': primary_label})
@@ -85,7 +86,24 @@ class KnowledgeBaseLabelsExtraction():
             all_labels_df = pd.DataFrame(all_labels)
             labels_dict = all_labels_df.groupby('DiseaseID')['Label'].apply(list).to_dict()
             return cls(labels_dict)
+    
+    @classmethod
+    def extract_labels_version_2(cls, kb_type, dataframe):
+        if kb_type == 'medic':
+            all_labels = []
+            for _, row in dataframe.iterrows():
+                synonyms_list = []
+                for synonyms in row['Synonyms']:
+                    synonyms_list.append(synonyms)
+                
+                if len(synonyms_list) == 0:
+                    all_labels.append({'DiseaseID': row['DiseaseID'], 'Label': [row['DiseaseName']]})
+                else:
+                    all_labels.append({'DiseaseID': row['DiseaseID'], 'Label': [row['DiseaseName']] + synonyms_list})
 
+            all_labels_df = pd.DataFrame(all_labels)
+            labels_dict = all_labels_df.set_index('DiseaseID')['Label'].to_dict()
+            return cls(labels_dict)
     
     def save(self, labels_folder):
         os.makedirs(labels_folder, exist_ok=True)
