@@ -13,9 +13,9 @@ except Exception: # this command not being found can raise quite a few different
     GPU_AVAILABLE = False
 
 if GPU_AVAILABLE:
-    import cupy as cp
     import cudf
-    from cuml.cluster import AgglomerativeClustering as CUAC
+    from cuml.cluster import AgglomerativeClustering
+    from cuml.linear_model import LogisticRegression
 
 
 class AgglomerativeClusteringGPU(Clustering):
@@ -46,8 +46,8 @@ class AgglomerativeClusteringGPU(Clustering):
         }
 
         # defaults.update(kwargs)
-        model = CUAC(**defaults)
-        embeddings = cudf.DataFrame(embeddings.toarray())
+        model = AgglomerativeClustering(**defaults)
+        embeddings = cudf.DataFrame(embeddings)
         model.fit(embeddings)
         return cls(model=model, model_type='Agglomerative')
 
@@ -62,3 +62,17 @@ class AgglomerativeClusteringGPU(Clustering):
     
     def get_labels(self):
         return self.model.labels_.to_numpy()
+    
+class LogisticRegressionGPU(Clustering):
+
+    @classmethod
+    def train(cls, X_train, y_train, **kwargs):
+        defaults = {
+            
+        }
+
+        model = LogisticRegression(**defaults)
+        x = cudf.DataFrame(X_train)
+        y = cudf.Series(y_train)
+        model.fit(x, y)
+        return cls(model=model, model_type='LogisticRegressionGPU')

@@ -19,14 +19,14 @@ class AgglomerativeClusteringCPU(Clustering):
 
         # defaults.update(kwargs)
         model = SKAC(**defaults)
-        model.fit(embeddings.toarray())
+        model.fit(embeddings)
         return cls(model=model, model_type='Agglomerative')
 
     def save_labels(self, clustering_folder):
         os.makedirs(clustering_folder, exist_ok=True)
-        clustering_df = pd.Dataframe(
+        clustering_df = pd.DataFrame(
             {
-                'Labels': self.model.labels_.to_numpy()
+                'Labels': self.model.labels_
             }
         )
         clustering_df.to_parquet(os.path.join(clustering_df, 'labels.parquet'))
@@ -40,8 +40,10 @@ class LogisticRegressionCPU(Clustering):
     def train(cls, X_train, y_train, **kwargs):
         defaults = {
             'random_state': 42,
+            'solver': 'liblinear'
         }
 
+        # SVM
         model = LogisticRegression(**defaults)
         model.fit(X_train, y_train)
-        return cls(model=model, model_type='Logistic')
+        return cls(model=model, model_type='LogisticRegressionCPU')

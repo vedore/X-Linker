@@ -78,15 +78,21 @@ class BioBertVectorizer():
         inputs = cls.tokenizer(corpus, return_tensors='pt', padding=True, truncation=True)
         with torch.no_grad():
             outputs = cls.model(**inputs)
-        return outputs.last_hidden_state.mean(dim=1)
-    
+        return outputs.last_hidden_state.mean(dim=1) 
+"""
+
 class DistilBertVectorizer():
 
     model_name = "distilbert-base-uncased"
     tokenizer = DistilBertTokenizer.from_pretrained("distilbert-base-uncased")
     model = DistilBertForSequenceClassification.from_pretrained("distilbert-base-uncased")
 
-"""
+    @classmethod
+    def predict(cls, corpus):
+        inputs = cls.tokenizer(corpus, return_tensors='pt', padding=True, truncation=True)
+        with torch.no_grad():
+            outputs = cls.model(**inputs)
+        return outputs.last_hidden_state.mean(dim=1) 
 
 
 
