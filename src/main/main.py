@@ -117,7 +117,7 @@ def trainning(embeddings, clustering_labels):
     
 dataframe = clean_kb()
 
-# create_labels(dataframe)
+create_labels(dataframe)
 
 processed_labels = get_labels_to_preprocessor()[1:]
 

@@ -14,6 +14,7 @@ except Exception: # this command not being found can raise quite a few different
 
 if GPU_AVAILABLE:
     import cudf
+    import cupy as cp
     from cuml.cluster import AgglomerativeClustering
     from cuml.linear_model import LogisticRegression
 
@@ -66,13 +67,13 @@ class AgglomerativeClusteringGPU(Clustering):
 class LogisticRegressionGPU(Clustering):
 
     @classmethod
-    def train(cls, X_train, y_train, **kwargs):
-        defaults = {
-            
-        }
-
+    def train(cls, x_train, y_train, **kwargs):
+        defaults = {}
         model = LogisticRegression(**defaults)
-        x = cudf.DataFrame(X_train)
-        y = cudf.Series(y_train)
-        model.fit(x, y)
+
+        subset_size = 5000
+
+        cp.get_default_memory_pool().free_all_blocks()
+        model.fit(x_train[:subset_size], y_train[:subset_size])
+        cp.get_default_memory_pool().free_all_blocks()
         return cls(model=model, model_type='LogisticRegressionGPU')
