@@ -21,21 +21,6 @@ if GPU_AVAILABLE:
 
 class AgglomerativeClusteringGPU(Clustering):
 
-    """
-        All the defaults,
-
-        defaults = {
-            'n_clusters': 16,
-            'metric': 'cosine',
-            'linkage': 'average',
-            'handle': None,
-            'verbose': False,
-            'connectivity': 'knn',
-            'n_neighbors': 10,
-            'output_type': None
-        }
-    """
-
     @classmethod
     def train(cls, embeddings):
         defaults = {
@@ -51,15 +36,6 @@ class AgglomerativeClusteringGPU(Clustering):
         embeddings = cudf.DataFrame(embeddings)
         model.fit(embeddings)
         return cls(model=model, model_type='Agglomerative')
-
-    def save_labels(self, clustering_folder):
-        os.makedirs(clustering_folder, exist_ok=True)
-        clustering_df = pd.DataFrame(
-            {
-                'Labels': self.model.labels_.to_numpy()
-            }
-        )
-        clustering_df.to_parquet(os.path.join(clustering_folder, 'labels.parquet'))
     
     def get_labels(self):
         return self.model.labels_.to_numpy()

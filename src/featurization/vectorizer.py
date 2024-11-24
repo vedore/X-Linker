@@ -65,7 +65,6 @@ class TfidfVectorizer(Preprocessor):
         model.fit(trn_corpus)
         return cls(vectorizer=model, vectorizer_type='tfidf')
 
-"""
 # Impossible To Run
 class BioBertVectorizer():
 
@@ -79,7 +78,6 @@ class BioBertVectorizer():
         with torch.no_grad():
             outputs = cls.model(**inputs)
         return outputs.last_hidden_state.mean(dim=1) 
-"""
 
 class DistilBertVectorizer():
 

@@ -1,4 +1,5 @@
 import time
+from src.trainning.cpu.train import TrainCPU
 import torch
 import os
 import pandas as pd
@@ -6,11 +7,9 @@ from scipy.sparse import csr_matrix
 
 from src.extractor.knowledge_base import KnowledgeBase, KnowledgeBaseLabelsExtraction
 from src.featurization.preprocessor import Preprocessor
-from src.machine_learning.gpu.ml import AgglomerativeClusteringGPU
 from src.machine_learning.cpu.ml import AgglomerativeClusteringCPU
-from src.featurization.vectorizer import DistilBertVectorizer, TfidfVectorizer
+from src.featurization.vectorizer import TfidfVectorizer
 from src.machine_learning.clustering import Clustering
-from src.trainning.gpu.train import TrainGPU
 
 
 def clean_kb():
@@ -94,32 +93,34 @@ def clustering(transformed_labels):
     # model.save_labels("data/processed/clustering")
 
     model = AgglomerativeClusteringCPU.load("data/processed/clustering")
-    labels = model.get_labels()
+    model.save_labels("data/processed/clustering")
+
+    # labels = model.get_labels()
 
     # print(labels.to_numpy())
 
-    clustering_df = pd.DataFrame(
-        {
-            'Labels': labels
-        }
-    )
+    # clustering_df = pd.DataFrame(
+    #     {
+    #         'Labels': labels
+    #     }
+    # )
+    # return clustering_df
 
-    return clustering_df
-
-    # return model.load_labels("data/processed/clustering")
+    return model.load_labels("data/processed/clustering")
 
 def load_clustering_labels(cluster_labels_folder):
     return Clustering.load_labels(cluster_labels_folder)
 
 def trainning(embeddings, clustering_labels):
-    TrainGPU.train(embeddings, clustering_labels)
-
+    TrainCPU.train(embeddings, clustering_labels)
     
 dataframe = clean_kb()
 
 create_labels(dataframe)
 
 processed_labels = get_labels_to_preprocessor()[1:]
+
+# print(len(processed_labels))
 
 embeddings = preprocessor(processed_labels)
 
@@ -133,9 +134,9 @@ embeddings = embeddings.toarray()
 
 cluster_labels = clustering(embeddings)
 
-# cluster_labels = load_clustering_labels("data/processed/clustering")
-
 # print(cluster_labels)
+
+# cluster_labels = load_clustering_labels("data/processed/clustering")
 
 trainning(embeddings, cluster_labels)
 

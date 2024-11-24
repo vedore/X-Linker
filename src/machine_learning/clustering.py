@@ -21,6 +21,20 @@ class Clustering():
             data = pickle.load(fclu)
         return cls(model=data['model'], model_type=data['model_type'])    
     
+    def save_labels(self, clustering_folder):
+        os.makedirs(clustering_folder, exist_ok=True)
+
+        if self.model_type == 'HierarchicalCPU':
+            labels = self.model.labels_
+        elif self.model_type == 'HierarchicalGPU':
+            labels = self.model.labels_.to_numpy()
+        # Have to run the algo again
+        elif self.model_type == 'Agglomerative':
+            labels = self.model.labels_
+
+        clustering_df = pd.DataFrame({'Labels': labels})
+        clustering_df.to_parquet(os.path.join(clustering_folder, 'labels.parquet'))
+
     @staticmethod
     def load_labels(clustering_folder):
         clustering_path = os.path.join(clustering_folder, 'labels.parquet')

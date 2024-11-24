@@ -1,46 +1,37 @@
 import os
 import pandas as pd
 
-from sklearn.cluster import AgglomerativeClustering as SKAC
+from sklearn.cluster import AgglomerativeClustering
 from sklearn.linear_model import LogisticRegression
 
 from src.machine_learning.clustering import Clustering
+from src.machine_learning.regression import Regression
 
 class AgglomerativeClusteringCPU(Clustering):
     
     @classmethod
-    def train(cls, embeddings, **kwargs):
+    def train(cls, embeddings):
         defaults = {
-            'n_clusters': None,           
-            'distance_threshold': 0.5,  
-            'metric': 'euclidean',
-            'linkage': 'ward',
+            'n_clusters': 16,           
         }
 
         # defaults.update(kwargs)
-        model = SKAC(**defaults)
+        model = AgglomerativeClustering(**defaults)
         model.fit(embeddings)
         return cls(model=model, model_type='Agglomerative')
-
-    def save_labels(self, clustering_folder):
-        os.makedirs(clustering_folder, exist_ok=True)
-        clustering_df = pd.DataFrame(
-            {
-                'Labels': self.model.labels_
-            }
-        )
-        clustering_df.to_parquet(os.path.join(clustering_df, 'labels.parquet'))
 
     def get_labels(self):
         return self.model.labels_
         
-class LogisticRegressionCPU(Clustering):
+class LogisticRegressionCPU(Regression):
 
     @classmethod
-    def train(cls, X_train, y_train, **kwargs):
+    def train(cls, X_train, y_train):
         defaults = {
-            'random_state': 42,
-            'solver': 'liblinear'
+            'random_state': 0,
+            'solver': 'lbfgs',
+            'max_iter': 100,
+            'verbose': 1
         }
 
         # SVM
