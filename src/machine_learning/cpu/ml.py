@@ -3,6 +3,8 @@ import pandas as pd
 
 from sklearn.cluster import AgglomerativeClustering
 from sklearn.linear_model import LogisticRegression
+from sklearn.decomposition import TruncatedSVD
+from scipy.sparse import csr_matrix
 
 from src.machine_learning.clustering import Clustering
 from src.machine_learning.regression import Regression
@@ -18,7 +20,7 @@ class AgglomerativeClusteringCPU(Clustering):
         # defaults.update(kwargs)
         model = AgglomerativeClustering(**defaults)
         model.fit(embeddings)
-        return cls(model=model, model_type='Agglomerative')
+        return cls(model=model, model_type='HierarchicalCPU')
 
     def get_labels(self):
         return self.model.labels_
@@ -36,5 +38,6 @@ class LogisticRegressionCPU(Regression):
 
         # SVM
         model = LogisticRegression(**defaults)
+        # X_train = csr_matrix(X_train)
         model.fit(X_train, y_train)
         return cls(model=model, model_type='LogisticRegressionCPU')

@@ -3,6 +3,8 @@ from src.trainning.cpu.train import TrainCPU
 import torch
 import os
 import pandas as pd
+import numpy as np
+import gc
 from scipy.sparse import csr_matrix
 
 from src.extractor.knowledge_base import KnowledgeBase, KnowledgeBaseLabelsExtraction
@@ -92,19 +94,9 @@ def clustering(transformed_labels):
     # model.save("data/processed/clustering")
     # model.save_labels("data/processed/clustering")
 
+    # 16 clusters
     model = AgglomerativeClusteringCPU.load("data/processed/clustering")
-    model.save_labels("data/processed/clustering")
-
-    # labels = model.get_labels()
-
-    # print(labels.to_numpy())
-
-    # clustering_df = pd.DataFrame(
-    #     {
-    #         'Labels': labels
-    #     }
-    # )
-    # return clustering_df
+    # model.save_labels("data/processed/clustering")
 
     return model.load_labels("data/processed/clustering")
 
@@ -120,19 +112,13 @@ create_labels(dataframe)
 
 processed_labels = get_labels_to_preprocessor()[1:]
 
-# print(len(processed_labels))
-
 embeddings = preprocessor(processed_labels)
 
-# tfidf
-embeddings = embeddings.toarray() 
+del dataframe
+del processed_labels
+gc.collect()
 
-# DistilBert
-# embeddings = embeddings.numpy()
-
-# print(type(embeddings))
-
-cluster_labels = clustering(embeddings)
+cluster_labels = clustering(embeddings.toarray())
 
 # print(cluster_labels)
 

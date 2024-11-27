@@ -4,8 +4,8 @@ import os
 import pickle
 
 from sklearn.feature_extraction.text import TfidfVectorizer as TfidfVec
-from transformers import AutoTokenizer, AutoModel
-from transformers import DistilBertTokenizer, DistilBertForSequenceClassification
+# from transformers import AutoTokenizer, AutoModel
+# from transformers import DistilBertTokenizer, DistilBertForSequenceClassification
 
 from src.featurization.preprocessor import Preprocessor
 
@@ -46,25 +46,38 @@ class TfidfVectorizer(Preprocessor):
     """
     @classmethod
     def train(cls, trn_corpus, dtype=np.float32):
-        defaults = {
-            'encoding': 'utf-8',
-            'strip_accents': 'unicode',
-            'stop_words': None, 
-            'ngram_range': (1, 1),
-            'min_df': 1,
-            'lowercase': True,
-            'norm': 'l2',
-            'dtype': dtype     
+        # min_df = 0.0
+        # max df = 0.98
+
+        # 
+        # Mine -> (13298, 13715) min_df = 0.0001, max_df = 0.98
+        x_linker_params = {
+            "ngram_range": (1, 2),       # n-grams from 1 to 2
+            "max_features": None,        # No max feature limit
+            "min_df": 0.0,            # Minimum document frequency ratio
+            "max_df": 0.98,                 # Maximum document frequency ratio
+            "binary": False,             # Term frequency is not binary
+            "use_idf": True,             # Use inverse document frequency
+            "smooth_idf": True,          # Apply smoothing to idf
+            "sublinear_tf": False,       # Use raw term frequency
+            "norm": "l2",                # Apply L2 normalization
+            "analyzer": "word",          # Tokenizes by word
+            "stop_words": None,          # No stop words used
+            "dtype": dtype
+        }
+        default = {
+
         }
         try:
-            model = TfidfVec(**defaults)
+            model = TfidfVec(**default)
         except TypeError:
             raise Exception(
-                f"vectorizer config {defaults} contains unexpected keyword arguments for TfidfVectorizer"
+                f"vectorizer config {x_linker_params} contains unexpected keyword arguments for TfidfVectorizer"
             )
         model.fit(trn_corpus)
         return cls(vectorizer=model, vectorizer_type='tfidf')
 
+"""
 # Impossible To Run
 class BioBertVectorizer():
 
@@ -91,6 +104,4 @@ class DistilBertVectorizer():
         with torch.no_grad():
             outputs = cls.model(**inputs)
         return outputs.last_hidden_state.mean(dim=1) 
-
-
-
+"""

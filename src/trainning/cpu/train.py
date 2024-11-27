@@ -3,7 +3,7 @@ import time
 import pickle
 import os
 
-from sklearn.metrics import classification_report, f1_score, precision_score, accuracy_score, recall_score
+from sklearn.metrics import classification_report, f1_score, precision_score, accuracy_score, recall_score, top_k_accuracy_score
 from sklearn.model_selection import train_test_split
 
 from src.machine_learning.cpu.ml import LogisticRegressionCPU
@@ -35,7 +35,6 @@ class TrainCPU():
         # Predict on the test set
         y_pred = model.predict(X_test)
 
-        # print(classification_report(y_test, y_pred, zero_division=0))
         print("Accuracy (Test Set):", accuracy_score(y_test, y_pred))
         print("F1 Score (Test Set):", f1_score(y_test, y_pred, average="weighted"))
         print("Precision (Test Set):", precision_score(y_test, y_pred, average="weighted"))
@@ -43,41 +42,56 @@ class TrainCPU():
 
         y_proba = model.predict_proba(X_test)
 
-        # Function to calculate top-k accuracy for CPU
-        def top_k_accuracy(y_true, y_proba, k=3):
+        """
+        # Define top-k
+        top_k = 5
+
+        # Get top-k predictions
+        top_k_indices = np.argsort(y_proba, axis=1)[:, -top_k:]  # Top-k indices for each instance
+        top_k_scores = np.sort(y_proba, axis=1)[:, -top_k:]  # Corresponding scores
+
+        top_k_predictions = [
+            {"indices": indices.tolist(), "scores": scores.tolist()}
+            for indices, scores in zip(top_k_indices, top_k_scores)
+        ]
+
+        for i, pred in enumerate(top_k_predictions):
+            print(f"Instance {i}: {pred}")
+        """
+
+        def top_k_accuracy(predictions, true_labels, k=1):
             """
-            Computes the top-k accuracy on CPU.
-
-            Args:
-                y_true (array): True labels.
-                y_proba (array): Predicted probabilities (num_samples x num_classes).
-                k (int): Number of top predictions to consider.
-
+            Compute Top-k accuracy.
+            
+            Parameters:
+            - predictions: 2D array of shape (n_samples, n_classes), model scores or probabilities.
+            - true_labels: 1D array of shape (n_samples,), true label indices.
+            - k: int, Top-k to compute accuracy for.
+            
             Returns:
-                float: Top-k accuracy score.
+            - float, Top-k accuracy.
             """
-            # Convert y_true to a NumPy array if it's a pandas Series
-            if not isinstance(y_true, np.ndarray):
-                y_true = y_true.to_numpy()
-
-            # Get the top-k predicted class indices
-            top_k_preds = np.argsort(y_proba, axis=1)[:, -k:]
+            # Get indices of top-k predictions for each sample
+            top_k_preds = np.argsort(predictions, axis=1)[:, -k:][:, ::-1]  # Top-k in descending order
             
-            # Check if true labels are in the top-k predictions
-            matches = np.any(top_k_preds == y_true[:, None], axis=1)
+            # Check if true label is in the top-k predictions
+            correct = [true_label in top_k for true_label, top_k in zip(true_labels, top_k_preds)]
             
-            # Calculate the top-k accuracy
-            return matches.mean()
+            # Calculate accuracy
+            top_k_accuracy = np.mean(correct)
+            return top_k_accuracy
+        
+        # Compute Top-1 and Top-5 accuracy
+        top1_acc = top_k_accuracy(y_proba, y_test, k=1)
+        top5_acc = top_k_accuracy(y_proba, y_test, k=5)
 
-        # Calculate metrics
-        k = 3
-        top_k_acc = top_k_accuracy(y_test, y_proba, k=k)
-        print(f"Top-{k} Accuracy: {top_k_acc:.2f}")
+        print(f"Top-1 Accuracy: {top1_acc:.2f}")
+        print(f"Top-5 Accuracy: {top5_acc:.2f}")
      
 
     def save(model, regression_folder):
         os.makedirs(regression_folder, exist_ok=True)
         with open(os.path.join(regression_folder, 'regression.pkl'), 'wb') as fout:
-            pickle.dump({'model': model, 'model_type': 'regression'}, fout)       
+            pickle.dump({'model': model, 'model_type': 'regression'}, fout)    
 
 
