@@ -3,7 +3,7 @@ import time
 import pickle
 import os
 
-from sklearn.metrics import classification_report, f1_score, precision_score, accuracy_score, recall_score, top_k_accuracy_score
+from sklearn.metrics import classification_report, f1_score, precision_score, accuracy_score, recall_score
 from sklearn.model_selection import train_test_split
 
 from src.machine_learning.cpu.ml import LogisticRegressionCPU

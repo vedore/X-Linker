@@ -25,17 +25,14 @@ class AgglomerativeClusteringGPU(Clustering):
     def train(cls, embeddings):
         defaults = {
             'n_clusters': 16,
-            'metric': 'cosine',
-            'linkage': 'single',
-            'connectivity': 'knn',
-            'n_neighbors': 10,
+            'metric': 'euclidean',
         }
 
         # defaults.update(kwargs)
         model = AgglomerativeClustering(**defaults)
         embeddings = cudf.DataFrame(embeddings)
         model.fit(embeddings)
-        return cls(model=model, model_type='Agglomerative')
+        return cls(model=model, model_type='HierarchicalGPU')
     
     def get_labels(self):
         return self.model.labels_.to_numpy()

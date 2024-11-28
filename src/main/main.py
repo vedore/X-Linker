@@ -12,6 +12,8 @@ from src.featurization.preprocessor import Preprocessor
 from src.machine_learning.cpu.ml import AgglomerativeClusteringCPU
 from src.featurization.vectorizer import TfidfVectorizer
 from src.machine_learning.clustering import Clustering
+from src.machine_learning.gpu.ml import AgglomerativeClusteringGPU
+from src.trainning.gpu.train import TrainGPU
 
 
 def clean_kb():
@@ -89,13 +91,18 @@ def clustering(transformed_labels):
             model.save_labels("data/processed/clustering")
     """
     
-    # Suppose to be GPU
+    # Suppose to be CPU
     # model = AgglomerativeClusteringCPU.train(transformed_labels)
     # model.save("data/processed/clustering")
     # model.save_labels("data/processed/clustering")
 
+    # Suppose to be CPU
+    model = AgglomerativeClusteringGPU.train(transformed_labels)
+    model.save("data/processed/clustering")
+    model.save_labels("data/processed/clustering")
+
     # 16 clusters
-    model = AgglomerativeClusteringCPU.load("data/processed/clustering")
+    # model = AgglomerativeClusteringCPU.load("data/processed/clustering")
     # model.save_labels("data/processed/clustering")
 
     return model.load_labels("data/processed/clustering")
@@ -104,7 +111,7 @@ def load_clustering_labels(cluster_labels_folder):
     return Clustering.load_labels(cluster_labels_folder)
 
 def trainning(embeddings, clustering_labels):
-    TrainCPU.train(embeddings, clustering_labels)
+    TrainGPU.train(embeddings, clustering_labels)
     
 dataframe = clean_kb()
 
