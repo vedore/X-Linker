@@ -1,8 +1,8 @@
 import subprocess
 import os
-import pandas as pd
 import numpy as np
 import pickle
+
 from sklearn.metrics import classification_report, f1_score, precision_score, accuracy_score, recall_score
 from sklearn.model_selection import train_test_split
 

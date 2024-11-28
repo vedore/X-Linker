@@ -1,6 +1,4 @@
 import subprocess
-import os
-import pandas as pd
 
 from src.machine_learning.clustering import Clustering
 

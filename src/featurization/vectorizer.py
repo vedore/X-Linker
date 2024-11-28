@@ -1,9 +1,6 @@
 import numpy as np
-import torch
-import os
-import pickle
-
 from sklearn.feature_extraction.text import TfidfVectorizer as TfidfVec
+
 # from transformers import AutoTokenizer, AutoModel
 # from transformers import DistilBertTokenizer, DistilBertForSequenceClassification
 
@@ -75,7 +72,7 @@ class TfidfVectorizer(Preprocessor):
                 f"vectorizer config {x_linker_params} contains unexpected keyword arguments for TfidfVectorizer"
             )
         model.fit(trn_corpus)
-        return cls(vectorizer=model, vectorizer_type='tfidf')
+        return cls(model=model, model_type='tfidf')
 
 """
 # Impossible To Run

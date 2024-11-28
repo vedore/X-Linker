@@ -28,9 +28,6 @@ class Clustering():
             labels = self.model.labels_
         elif self.model_type == 'HierarchicalGPU':
             labels = self.model.labels_.to_numpy()
-        # Have to run the algo again
-        elif self.model_type == 'Agglomerative':
-            labels = self.model.labels_
 
         clustering_df = pd.DataFrame({'Labels': labels})
         clustering_df.to_parquet(os.path.join(clustering_folder, 'labels.parquet'))

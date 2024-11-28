@@ -1,10 +1,5 @@
-import os
-import pandas as pd
-
 from sklearn.cluster import AgglomerativeClustering
 from sklearn.linear_model import LogisticRegression
-from sklearn.decomposition import TruncatedSVD
-from scipy.sparse import csr_matrix
 
 from src.machine_learning.clustering import Clustering
 from src.machine_learning.regression import Regression
