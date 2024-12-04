@@ -1,4 +1,0 @@
-2024-10-23 11:15:20,047 - INFO - Logging setup complete.
-2024-10-23 11:15:20,047 - INFO - CUDA is available:False
-2024-10-23 11:15:20,047 - INFO - CUDA Device Count:0
-2024-10-23 11:15:20,047 - ERROR - No training parameters file found.
