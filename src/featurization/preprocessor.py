@@ -1,6 +1,7 @@
 import json
 import pickle
 import os
+import pandas as pd
 
 kb_dict = {
     'medic': 'DiseaseID',
@@ -61,5 +62,23 @@ class Preprocessor():
 
     def predict(self, corpus):
         return self.model.transform(corpus)
+    
+    @staticmethod 
+    def load_data_from_file(train_filepath, labels_filepath):
+        assert os.path.exists(train_filepath), f"{train_filepath} does not exist"
+        assert os.path.exists(labels_filepath), f"{labels_filepath} does not exist"
+
+        train_df = pd.read_csv(train_filepath, header=None, names=['id', 'train_name'], delimiter="\t")
+        # Corpus
+        train_data = train_df['train_name'].to_list()
+
+        labels_df = pd.read_csv(labels_filepath, header=None, names=['label'])
+        # Dense Matrix
+        labels_data = labels_df['label'].to_list()
+
+        return {
+                'labels_data':labels_data, 
+                'corpus': train_data
+                }
     
         

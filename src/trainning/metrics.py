@@ -61,7 +61,9 @@ class Metrics():
         
         # Compute Top-1 and Top-5 accuracy
         top1_acc = top_k_accuracy(y_proba, y_test, k=1)
+        top3_acc = top_k_accuracy(y_proba, y_test, k=3)
         top5_acc = top_k_accuracy(y_proba, y_test, k=5)
 
         print(f"Top-1 Accuracy: {top1_acc:.2f}")
+        print(f"Top-3 Accuracy: {top3_acc:.2f}")
         print(f"Top-5 Accuracy: {top5_acc:.2f}")
