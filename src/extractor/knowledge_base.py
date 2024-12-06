@@ -52,8 +52,8 @@ class KnowledgeBase():
         return cls(df)
     
  
-    def extract_labels(self, labels_folder):
-        KnowledgeBaseLabelsExtraction.extract_labels(self.kb_type, self.dataframe, labels_folder)
+    def extract_labels(self):
+        KnowledgeBaseLabelsExtraction.extract_labels(self.kb_type, self.dataframe)
 
     @staticmethod
     def get_column_names(kb_filepath, skip_rows):
@@ -135,28 +135,26 @@ class KnowledgeBaseCleaner():
 class KnowledgeBaseTextNormalizer():
     
     stop_words = set(stopwords.words("english"))
-    lemmatizer = WordNetLemmatizer()    
 
     @classmethod
     def normalize_dataframe(cls, kb_type, dataframe):
         stop_words = set(stopwords.words("english"))
-        lemmatizer = WordNetLemmatizer() 
 
         if kb_type == 'medic':
             kb_medic = ['Definition', 'Synonyms', 'SlimMappings']
                 
-            dataframe['DiseaseName'] = dataframe['DiseaseName'].apply(lambda text: cls.normalize_text(stop_words, lemmatizer, text))
+            dataframe['DiseaseName'] = dataframe['DiseaseName'].apply(lambda text: cls.normalize_text(stop_words, text))
             for col in kb_medic:
-                dataframe[col] = dataframe[col].apply(lambda list: cls.normalize_list(stop_words, lemmatizer, list))
+                dataframe[col] = dataframe[col].apply(lambda list: cls.normalize_list(stop_words, list))
         
         return dataframe
 
     @classmethod
-    def normalize_list(cls, stop_words, lemmatizer, text_list):
-        return [cls.normalize_text(stop_words, lemmatizer, text) for text in text_list]
+    def normalize_list(cls, stop_words, text_list):
+        return [cls.normalize_text(stop_words, text) for text in text_list]
 
     @staticmethod
-    def normalize_text(stop_words, lemmatizer, text):
+    def normalize_text(stop_words, text):
         # Lowercase the text
         text = text.lower()
             

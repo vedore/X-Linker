@@ -72,7 +72,7 @@ class TfidfVectorizer(Preprocessor):
                 f"vectorizer config {x_linker_params} contains unexpected keyword arguments for TfidfVectorizer"
             )
         model.fit(trn_corpus)
-        return cls(model=model, model_type='tfidf')
+        return cls(model=model, model_type='TfidfSkLearn')
 
 """
 # Impossible To Run

@@ -12,7 +12,7 @@ class Preprocessor():
 
     def __init__(self, model=None, model_type=None):
         self.model = model
-        self.model_type = model
+        self.model_type = model_type
 
     def save(self, preprocessor_folder):
         os.makedirs(preprocessor_folder, exist_ok=True)

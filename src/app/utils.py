@@ -4,6 +4,7 @@ from src.featurization.preprocessor import Preprocessor
 from src.machine_learning.cpu.ml import AgglomerativeClusteringCPU
 from src.featurization.vectorizer import TfidfVectorizer
 from src.machine_learning.clustering import Clustering
+from src.trainning.hierarchical_linear_model import HieararchicalLinearModel
 
 
 def iniatilize_knowledge_base(kb_type, kb_location, erase):
@@ -65,7 +66,7 @@ def embedddings_from_preprocessor(processed_labels, erase):
     if not erase:
         try:
             model = Preprocessor.load(vectorizer_path)
-            print(f"Loaded Vectorizer, Type: {model.vectorizer_type}\n")
+            print(f"Loaded Vectorizer, Type: {model.model_type}\n")
         except Exception as e:
             print(f"Could not load Vectorizer ({e}). Creating a new one.")
             erase = True
@@ -103,4 +104,5 @@ def cluster_labels_from_clustering(embeddings, erase):
 
 def metrics_from_trainning(embeddings, clustering_labels):
     print("Trainning")
-    TrainCPU.train(embeddings, clustering_labels)
+    # TrainCPU.train(embeddings, clustering_labels)
+    HieararchicalLinearModel.execute_pipeline(embeddings, clustering_labels)

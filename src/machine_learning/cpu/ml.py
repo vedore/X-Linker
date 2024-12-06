@@ -2,7 +2,7 @@ from sklearn.cluster import AgglomerativeClustering
 from sklearn.linear_model import LogisticRegression
 
 from src.machine_learning.clustering import Clustering
-from src.machine_learning.regression import Regression
+from src.machine_learning.classifier import Classifier
 
 class AgglomerativeClusteringCPU(Clustering):
     
@@ -20,7 +20,7 @@ class AgglomerativeClusteringCPU(Clustering):
     def get_labels(self):
         return self.model.labels_
         
-class LogisticRegressionCPU(Regression):
+class LogisticRegressionCPU(Classifier):
 
     @classmethod
     def train(cls, X_train, y_train):
@@ -28,7 +28,7 @@ class LogisticRegressionCPU(Regression):
             'random_state': 0,
             'solver': 'lbfgs',
             'max_iter': 100,
-            'verbose': 1
+            'verbose': 0
         }
 
         # SVM
