@@ -1,4 +1,4 @@
-from sklearn.cluster import AgglomerativeClustering
+from sklearn.cluster import AgglomerativeClustering, KMeans
 from sklearn.linear_model import LogisticRegression
 
 from src.machine_learning.clustering import Clustering
@@ -36,3 +36,17 @@ class LogisticRegressionCPU(Classifier):
         # X_train = csr_matrix(X_train)
         model.fit(X_train, y_train)
         return cls(model=model, model_type='LogisticRegressionCPU')
+    
+class KMeansCPU(Classifier):
+
+    @classmethod
+    def train(cls, X_train):
+        defaults = {
+            'n_clusters': 16,
+            'max_inter': 300,
+            'random_state': 0
+        }
+        # X_train -> Embeddings
+        model = KMeans(**defaults)
+        model.fit(X_train)
+        return cls(model=model, model_type='KMeansCPU')
