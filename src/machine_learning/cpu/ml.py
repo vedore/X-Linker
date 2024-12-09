@@ -43,10 +43,14 @@ class KMeansCPU(Classifier):
     def train(cls, X_train):
         defaults = {
             'n_clusters': 16,
-            'max_inter': 300,
+            'max_iter': 300,
             'random_state': 0
         }
         # X_train -> Embeddings
+        # If a sparse matrix is passed, a copy will be made if it’s not in CSR format.
         model = KMeans(**defaults)
         model.fit(X_train)
         return cls(model=model, model_type='KMeansCPU')
+    
+    def get_labels(self):
+        return self.model.labels_

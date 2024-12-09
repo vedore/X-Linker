@@ -19,8 +19,6 @@ def main():
 
     cluster_labels = cluster_labels_from_clustering(embeddings, erase=args.erase)
 
-    # print(cluster_labels)
-
     metrics_from_trainning(embeddings, cluster_labels['Labels'])
 
 if __name__ == "__main__":

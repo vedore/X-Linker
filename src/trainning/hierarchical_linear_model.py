@@ -5,7 +5,7 @@ import numpy as np
 
 from sklearn.model_selection import train_test_split
 
-from src.machine_learning.cpu.ml import AgglomerativeClusteringCPU, LogisticRegressionCPU
+from src.machine_learning.cpu.ml import AgglomerativeClusteringCPU, KMeansCPU, LogisticRegressionCPU
 
 class HieararchicalLinearModel():
 
@@ -29,6 +29,7 @@ class HieararchicalLinearModel():
     @classmethod
     # X_data = embeddings, y_data = cluster labels
     def execute_pipeline(cls, X_data, y_data):
+
         X_train, X_test, y_train, y_test = train_test_split(
             X_data, 
             y_data, 
@@ -40,26 +41,19 @@ class HieararchicalLinearModel():
         root_model = LogisticRegressionCPU.train(X_train, y_train).model
 
         y_proba = root_model.predict_proba(X_test)
-        k = 5
-        top_k_indices = np.argsort(y_proba, axis=1)[:, -k:][:, ::-1]
-        top_k_probabilities = np.take_along_axis(y_proba, top_k_indices, axis=1)
+                
+        def get_top_k_indices(y_proba, k):
+            top_k_indices = np.argsort(y_proba, axis=1)[:, -k:][:, ::-1]
+            # top_k_probabilities = np.take_along_axis(y_proba, top_k_indices, axis=1)
+            return top_k_indices
 
-        # print(top_k_indices)
-        # print(top_k_probabilities)
-
+        top_k_indices = get_top_k_indices(y_proba, 2)
 
         """
             pegar os top 5 clusters de cada row, e fazer os filhos, 
             e com os 5 desses fazer outros 5
             Para testar tentar com 2 
-        """
 
-        print(top_k_indices)
-
-        exit()
-
-
-        """
             Fazer 3 niveis, root, child, leaf.
             Começa-se por fazer uma LogisticRegression na root, 
             Depois fazer para cada cluster, outro algoritmo de clustering e 
@@ -73,30 +67,49 @@ class HieararchicalLinearModel():
             top_k labels
         """
 
-        def execute_child_pipeline(X_data, y_data):
+        def execute_child_pipeline(X_child_data, y_child_data, child_top_k_indices):
             cluster_labels_algorithms = {}
             linear_algorithms = {}
 
-            for root_cluster in np.unique(y_data):
-                print('Cluster', root_cluster)
-                filtered_embeddings = X_data[root_cluster == y_data]
+            # Embeddings, Label To Filter
+            def get_embeddings_from_cluster_label(X_data, y_data, label):
+                return X_data[y_data == label] 
+            
+            # Going One By One, Revamp the pipeline
+            # for each cluster inside top_k_indices
+            for child_cluster in np.unique(top_k_indices):
+                print('Cluster', child_cluster)
+                # Mais tempo, mas menos memoria
+                child_filtered_embeddings = get_embeddings_from_cluster_label(X_child_data, y_child_data, child_cluster)
 
                 print('Started Clustering')
-                agglomerative_clustering = AgglomerativeClusteringCPU.train(filtered_embeddings.toarray()) 
-                cluster_labels = agglomerative_clustering.get_labels()    
-                cluster_labels_algorithms[root_cluster] = cluster_labels
+                # agglomerative_clustering = AgglomerativeClusteringCPU.train(filtered_embeddings.toarray()) 
+                kmeans_clustering = KMeansCPU.train(child_filtered_embeddings) 
+                child_cluster_labels = kmeans_clustering.get_labels() 
+                # Save The Algorithm   
+                cluster_labels_algorithms[child_cluster] = child_cluster_labels
+
+                child_X_train, child_X_test, child_y_train, child_y_test = train_test_split(
+                child_filtered_embeddings, 
+                child_cluster_labels, 
+                test_size=0.2, 
+                random_state=42
+                )
 
                 print('Started Logistic')
-                logistic_regression = LogisticRegressionCPU.train(filtered_embeddings, cluster_labels)
-                linear_algorithms[root_cluster] = logistic_regression.model
+                logistic_regression = LogisticRegressionCPU.train(child_X_train, child_y_train)
+                # Save The Algorithm
+                linear_algorithms[child_cluster] = logistic_regression.model
             
-            return {'labels': cluster_labels_algorithms, 'linear_models': linear_algorithms}
+            return {'cluster_labels': cluster_labels_algorithms, 'linear_models': linear_algorithms}
+
+        samples = {}
+        counter = 0
+        for top_k_list in top_k_indices:
+            samples[counter] = execute_child_pipeline(X_data, y_data, top_k_list)
+            counter += 1
+
+        print(samples)
 
         
-        dict = execute_child_pipeline(X_data, y_data)
-
-        cluster_labels = dict['labels']
-        linear_models = dict['linear_models']
-
-        print(cluster_labels)
                 
