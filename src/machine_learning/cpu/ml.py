@@ -1,5 +1,6 @@
 from sklearn.cluster import AgglomerativeClustering, KMeans
 from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import normalize
 
 from src.machine_learning.clustering import Clustering
 from src.machine_learning.classifier import Classifier
@@ -43,13 +44,15 @@ class KMeansCPU(Classifier):
     def train(cls, X_train):
         defaults = {
             'n_clusters': 16,
-            'max_iter': 300,
-            'random_state': 0
+            'max_iter': 20,
+            'random_state': 0,
+            'n_init': 10,
         }
+        X_normalized = normalize(X_train)
         # X_train -> Embeddings
         # If a sparse matrix is passed, a copy will be made if it’s not in CSR format.
         model = KMeans(**defaults)
-        model.fit(X_train)
+        model.fit(X_normalized)
         return cls(model=model, model_type='KMeansCPU')
     
     def get_labels(self):
